@@ -9,8 +9,19 @@ Usage(command line):
 qsconvert.py [options] [tasks] [filenames]
 ```
 
-Example options: /e /fs*=1.5 /m -hs /cc=0xff /w=100
-Example tasks: /svg /fsvg /g=3
-Displaying help: qsconvert.py /?
+Example options:
+```
+/e /fs*=1.5 /m -hs /cc=0xff /w=100
+```
+
+Example tasks:
+```
+/svg /fsvg /g=3
+```
+
+Displaying help:
+```
+qsconvert.py /?
+```
 
 If no filenames are informed, the script processes all valid formats from the working folder.
