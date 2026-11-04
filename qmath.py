@@ -555,6 +555,7 @@ LINETYPE = 'LineType'
 LINECOLOR = 'LineColor'
 U1 = 'U1'
 PINASSOC = 'PinAssoc'
+LOOKUPINDEX = 'LookupIndex'
 RECT = 'rect'
 FILLCOLOR = 'FillColor'
 U2 = 'U2'
@@ -595,6 +596,7 @@ EXTRA_10 = f'{EXTRA_}10'
 IMAGE = 'image'
 NETDESCRIPTION = 'netdescription'
 PINLABEL = 'pinlabel'
+PINDATA = 'PinData'
 NETTEXT = 'nettext'
 TRANSLATE = 0
 ROTATE = 1
@@ -814,18 +816,18 @@ QSPICE_DEFS = SafeDict({
     JUNCTION: (P1,), # trailling comma indicates single element tuple
     WIRE: (P1, P2, NETNAME),
     TAP: (P1, P2),
-    ARC: (P1, P2, P3, P4, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    RECT: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, U3),
-    PATH: (P1, PATHDATA, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, PINASSOC, U3, ISTEXT, TRANSFORM),
-    COIL: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ELLIPSE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    CIRCLE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U1, PINASSOC),
-    ZIGZAG: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    PIN: (P1, LP1, FONTSIZE, ORIENTATION, U1, FONTCOLOR, U2, PINNAME, NETNAME),
-    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, U1, U2, STRG),
+    ARC: (P1, P2, P3, P4, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    RECT: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC),
+    PATH: (P1, PATHDATA, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC, ISTEXT, TRANSFORM),
+    COIL: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ELLIPSE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    CIRCLE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    ZIGZAG: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    PIN: (P1, LP1, FONTSIZE, ORIENTATION, PINDATA, FONTCOLOR, LOOKUPINDEX, PINNAME, NETNAME),
+    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, LOOKUPINDEX, PINASSOC, STRG),
     JUMPER: (P1, P2)
 })
 
@@ -838,18 +840,18 @@ COMPOSE_DEFS = SafeDict({
     JUNCTION: (P1,), # trailling comma indicates single element tuple
     WIRE: (P1, P2, NETNAME),
     TAP: (P1, P2),
-    ARC: (P1, P2, P3, P4, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    RECT: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, U3),
-    PATH: (P1, PATHDATA, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, PINASSOC, U3, ISTEXT, TRANSFORM),
-    COIL: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ELLIPSE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    CIRCLE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U1, PINASSOC),
-    ZIGZAG: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    PIN: (P1, LP1, FONTSIZE, ORIENTATION, U1, FONTCOLOR, U2, ORIGINAL_TEXT),
-    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, U1, U2, STRG),
+    ARC: (P1, P2, P3, P4, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    RECT: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC),
+    PATH: (P1, PATHDATA, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC, ISTEXT, TRANSFORM),
+    COIL: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ELLIPSE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    CIRCLE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    ZIGZAG: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    PIN: (P1, LP1, FONTSIZE, ORIENTATION, PINDATA, FONTCOLOR, LOOKUPINDEX, ORIGINAL_TEXT),
+    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, LOOKUPINDEX, PINASSOC, STRG),
     JUMPER: (P1, P2)
 })
 
@@ -858,18 +860,18 @@ DRAWABLE_DEFS = SafeDict({
     JUNCTION: (P1,), # trailling comma indicates single element tuple
     WIRE: (P1, P2, NETNAME),
     TAP: (P1, P2),
-    ARC: (P1, P2, P3, P4, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    RECT: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, U3),
-    PATH: (P1, PATHDATA, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, PINASSOC, U3, ISTEXT, TRANSFORM),
-    COIL: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ELLIPSE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    CIRCLE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U1, PINASSOC),
-    ZIGZAG: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    PIN: (P1, LP1, FONTSIZE, ORIENTATION, U1, FONTCOLOR, U2, PINNAME, NETNAME),
-    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, U1, U2, STRG),
+    ARC: (P1, P2, P3, P4, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    RECT: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC),
+    PATH: (P1, PATHDATA, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC, ISTEXT, TRANSFORM),
+    COIL: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ELLIPSE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    CIRCLE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    ZIGZAG: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    PIN: (P1, LP1, FONTSIZE, ORIENTATION, PINDATA, FONTCOLOR, LOOKUPINDEX, PINNAME, NETNAME),
+    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, LOOKUPINDEX, PINASSOC, STRG),
     JUMPER: (P1, P2)
 })
 
@@ -880,33 +882,33 @@ SCHEMATIC_DEFS = SafeDict({
     JUNCTION: (P1,), # trailling comma indicates single element tuple
     WIRE: (P1, P2, NETNAME),
     TAP: (P1, P2),
-    ARC: (P1, P2, P3, P4, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    RECT: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, U3),
-    PATH: (P1, PATHDATA, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, PINASSOC, U3, ISTEXT, TRANSFORM),
-    COIL: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ELLIPSE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U1, PINASSOC),
-    ZIGZAG: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    PIN: (P1, LP1, FONTSIZE, ORIENTATION, U1, FONTCOLOR, U2, PINNAME, NETNAME),
-    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, U1, U2, STRG),
+    ARC: (P1, P2, P3, P4, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    RECT: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC),
+    PATH: (P1, PATHDATA, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC, ISTEXT, TRANSFORM),
+    COIL: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ELLIPSE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    ZIGZAG: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    PIN: (P1, LP1, FONTSIZE, ORIENTATION, PINDATA, FONTCOLOR, LOOKUPINDEX, PINNAME, NETNAME),
+    TEXT: (P1, FONTSIZE, ORIENTATION, ISCOMMENTORVISIBLE, FONTCOLOR, LOOKUPINDEX, PINASSOC, STRG),
     JUMPER: (P1, P2)
 })
 
 IGNORE_COMPOSE_DEFS = {JUMPER}
 
 ANNOTATION_DEFS = SafeDict({
-    ARC: (P1, P2, P3, P4, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    RECT: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, U3),
-    PATH: (P1, PATHDATA, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, HBLOCK, PINASSOC, U3, ISTEXT, TRANSFORM),
-    COIL: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC),
-    ELLIPSE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    CIRCLE: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U2, PINASSOC),
-    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, U1, PINASSOC),
-    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, U1, PINASSOC),
-    ZIGZAG: (P1, P2, U1, LINEWIDTH, LINETYPE, LINECOLOR, U2, PINASSOC)
+    ARC: (P1, P2, P3, P4, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ARC3P: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    RECT: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC),
+    PATH: (P1, PATHDATA, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, HBLOCK, PINASSOC, ISTEXT, TRANSFORM),
+    COIL: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    ELLIPSE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    CIRCLE: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    LINE: (P1, P2, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC),
+    TRIANGLE: (P1, P2, P3, LINEWIDTH, LINETYPE, LINECOLOR, FILLCOLOR, LOOKUPINDEX, PINASSOC),
+    ZIGZAG: (P1, P2, ROTATION, LINEWIDTH, LINETYPE, LINECOLOR, LOOKUPINDEX, PINASSOC)
 })
 
 SYMBOL_PIN_HASH_DEFS = (P1, LP1, FONTSIZE, ORIENTATION, FONTCOLOR, PINNAME)
@@ -2758,6 +2760,23 @@ def gnan(a,
     r = (s - 360) if (s > 180) else s
     return r
 
+def diag(pts, 
+    # localize names:
+    rotate_point = rotate_point):
+    return (rotate_point(p, -45) for p in pts)
+
+def diag_(coords,
+    # localize names:
+    rotate_point = rotate_point, iter = iter, zip = zip):
+    it = iter(coords)
+    # Unpacks each rotated (x, y) point back into individual coordinates on the fly
+    return (c for pair in zip(it, it) for c in rotate_point(pair, -45))
+    
+def undiag(p,
+    # localize names:
+    apply_transform = apply_transform, ROTATE = ROTATE):
+    return apply_transform(p, [(ROTATE, 45)])
+
 def demirror(rot_code):
     return (rot_code - 8) if (rot_code >= 8) else rot_code
 
@@ -2765,7 +2784,11 @@ def ismirror(rot_code):
     return (rot_code >= 8)
 
 def isdiagonal(rot_code):
-    return ((rot_code % 2) != 0)
+    try:
+        r = ((rot_code % 2) != 0)
+    except:
+        r = False
+    return r
 
 def combine_angle_codes(codes,
     # localize names:
@@ -3003,24 +3026,34 @@ def triangle(p1, p2, p3,
 ):
     return triangle_(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1])
 
-def rect_(x1, y1, x2, y2):
+def rect_(x1, y1, x2, y2, diagonal = False,
+    # localize names:
+    diag_ = diag_, undiag = undiag):
+    if diagonal:
+        x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
+        
     # Calculate intermediate corners
     corner2 = (x2, y1)
     corner4 = (x1, y2)
 
-    return [
+    p = [
         ("M", (x1, y1)),
         ("L", corner2),
         ("L", (x2, y2)),
         ("L", corner4),
         ("Z", ())
     ]
+    
+    if diagonal:
+        p = undiag(p)
+    
+    return p
 
-def rect(p1, p2,
+def rect(p1, p2, diagonal = False,
     # localize names:
     rect_ = rect_
 ):
-    return rect_(p1[0], p1[1], p2[0], p2[1])
+    return rect_(p1[0], p1[1], p2[0], p2[1], diagonal)
     
 def pin_(x, y, scale):
     r = rect_(-12.5 * scale + x, -12.5 * scale + y, 12.5 * scale + x, 12.5 * scale + y)
@@ -3089,12 +3122,14 @@ def chassis(p, scale,
     
 _sin = lambda t, f=sin: -f(t) # ellipse function
 
-def ellipse_(x1, y1, x2, y2, samples=5, 
+def ellipse_(x1, y1, x2, y2, samples=5, diagonal = False,
     # localize names:
     fx=cos, fy=sin, dx=_sin, dy=cos, plt = plot_function, PI2 = PI2,
-    min = min, max = max, abs = abs, len = len):
+    min = min, max = max, abs = abs, len = len, 
+    diag_ = diag_, undiag = undiag):
 # Generates an ellipse as a list of path commands.
-
+    if diagonal:
+        x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
     # Use plot_function to map a unit circle onto the bounding box.
     # We use t to drive cos/sin, and the plot_function parameters
     # (width, height, left, bottom) to place it correctly in the SVG space.
@@ -3107,34 +3142,39 @@ def ellipse_(x1, y1, x2, y2, samples=5,
     if d and len(d) > 1:
         d[-1] = (d[-1][0], d[-1][1][:4] + d[0][1])
         d.append(("Z", ()))
-
+    
+    if diagonal:
+        d = undiag(d)
+    
     return d
 
-def ellipse(p1, p2, samples=5,
+def ellipse(p1, p2, samples=5, diagonal = False,
     # localize names:
     ellipse_ = ellipse_
 ):
-    return ellipse_(p1[0], p1[1], p2[0], p2[1], samples)
+    return ellipse_(p1[0], p1[1], p2[0], p2[1], samples, diagonal)
 
 # coil functions
 f_coil = lambda t, p=0.0, k=0.0, f=cos: p*t + k*f(t) # growth + bob
 d_coil = lambda t, p=0.0, k=0.0, f=sin: p - k*f(t) # derivative of f_coil
 
-def coil_(x1, y1, x2, y2, 
+def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
     # localize names:
     f = f_coil, d = d_coil, plt = plot_function, sd = sort_duke,
     fl = floor, PI2 = PI2, pi = pi, cos = cos, sin = sin,
-    abs = abs, min = min, max = max):
+    abs = abs, min = min, max = max, diag_ = diag_, undiag = undiag):
 # Draws a spring seen from 30 degrees in parallel projection
 # inside the bounding box defined by (x1, y1) and (x2, y2).
 # Auto-rotates if height > width.
 # Auto-mirrors if coordinates are reversed.
-
+    if diagonal:
+        x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
+    
     # 1. Declare constants
     w, h = abs(x2 - x1), abs(y2 - y1) # dimensions
     H, W = sd(w, h) # sorted dimensions
     ox, oy = min(x1, x2), max(y1, y2) # positions
-    m = -1 if ((x2 < x1) != (y2 < y1)) else 1 # mirror
+    m = (-1 if ((x2 < x1) != (y2 < y1)) else 1) * mirror # mirror
 
     # Calculate number of cycles based on aspect ratio
     # Cycles are always an integer bigger than zero plus a half
@@ -3155,27 +3195,34 @@ def coil_(x1, y1, x2, y2,
 
     # 3. Pass constants and functions to plot_function in accordance with orientation
     if h >= w: # vertical
-        return plt(sin, f, c*4, 0, T, w, h, -m, m, 0, W, ox, oy-o, cos, d, 0, -pi, None)
+        path = plt(sin, f, c*4, 0, T, w, h, -m, m, 0, W, ox, oy-o, cos, d, 0, -pi, None)
     else: # horizontal
-        return plt(f, sin, c*4, 0, T, w, h, 0, W, -m, m, ox+o, oy, d, cos, -pi, 0, None)
+        path = plt(f, sin, c*4, 0, T, w, h, 0, W, -m, m, ox+o, oy, d, cos, -pi, 0, None)
+        
+    if diagonal:
+        path = undiag(path)
     
-def coil(p1, p2,
+    return path
+    
+def coil(p1, p2, diagonal = False, mirror = 1,
     # localize names:
     coil_ = coil_
 ):
-    return coil_(p1[0], p1[1], p2[0], p2[1])
+    return coil_(p1[0], p1[1], p2[0], p2[1], diagonal, mirror)
 
 # zigzag functions
 v_zigzag = lambda g, o, cm="L", oxa=0.0, oy=0.0: (f"{cm}", ((oxa + o), (oy + g))) # Oscillation is X, Growth is Y
 h_zigzag = lambda g, o, cm="L", oya=0.0, ox=0.0: (f"{cm}", ((ox + g), (oya - o))) # Growth is X, Oscillation is Y
 
-def zigzag_(x1, y1, x2, y2, 
+def zigzag_(x1, y1, x2, y2, diagonal = False,
     # localize names:
     v = v_zigzag, n = h_zigzag, fl = floor, abs = abs, min = min,
-    range = range, max = max):
+    range = range, max = max, diag_ = diag_, undiag = undiag):
 # Generates a triangle wave path using LineTo commands.
 # Fits perfectly between (x1, y1) and (x2, y2).
-
+    if diagonal:
+        x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
+        
     # 1. Declare constants
     w, h = abs(x2 - x1), abs(y2 - y1) # dimensions
     ox, oy = min(x1, x2), min(y1, y2) # position
@@ -3208,24 +3255,29 @@ def zigzag_(x1, y1, x2, y2,
         d.append(n(b + q3, -a)) # down to valley
     # Calculate end point
     d.append(n(l, 0.0)) # back to middle
-
+    
+    if diagonal:
+        d = undiag(d)
     return d
 
-def zigzag(p1, p2,
+def zigzag(p1, p2, diagonal = False,
     # localize names:
     zigzag_ = zigzag_
 ):
-    return zigzag_(p1[0], p1[1], p2[0], p2[1])
+    return zigzag_(p1[0], p1[1], p2[0], p2[1], diagonal)
 
-def arc_(x1, y1, x2, y2, x3, y3, x4, y4, 
+def arc_(x1, y1, x2, y2, x3, y3, x4, y4, diagonal = False,
     # localize names:
     fx=cos, fy=sin, dx=_sin, dy=cos, plt = plot_function,
     at = atan2, PI2 = PI2, IP = IP, abs = abs, round = round,
+    diag_ = diag_, undiag = undiag
 ):
 # Draws an elliptical arc.
 # p1 and p2 define the bounding rectangle.
 # p3 and p4 define the radial lines determining the arc endpoints.
-
+    if diagonal:
+        x1, y1, x2, y2, x3, y3, x4, y4 = diag_((x1, y1, x2, y2, x3, y3, x4, y4))
+        
     # 1. Declare constants
     # Center of the rectangle / ellipse
     cx = (x1 + x2) * 0.5
@@ -3248,16 +3300,21 @@ def arc_(x1, y1, x2, y2, x3, y3, x4, y4,
         t_end += PI2
     
     # 2. Call plot_function
-    return plt(
+    d = plt(
         fx, fy, round(abs(t_end - t_start) * 1.5 * IP) + 2, t_start, t_end, 
         rx, ry, 0, 1, 0, 1, cx, cy, dx, dy, 0, 0, None
     )
+    
+    if diagonal:
+        d = undiag(d)
+    
+    return d
 
-def arc(p1, p2, p3, p4,
+def arc(p1, p2, p3, p4, diagonal = False,
     # localize names:
     arc_ = arc_
 ):
-    return arc_(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1], p4[0], p4[1])
+    return arc_(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1], p4[0], p4[1], diagonal)
 
 # arc3p functions
 # Formulas template: Center + (Lerp Radius) * sin(Lerp Angle)
@@ -3268,7 +3325,7 @@ fy_arc3p = lambda t, y3=0.0, r1=0.0, r=0.0, a1=0.0, a=0.0, f=sin: -y3 + (r1 + t 
 dx_arc3p = lambda t, r1=0.0, r=0.0, a1=0.0, a=0.0, f1=cos, f2=sin: r * f1(a1 + t * a) - (r1 + t * r) * a * f2(a1 + t * a)
 dy_arc3p = lambda t, r1=0.0, r=0.0, a1=0.0, a=0.0, f1=cos, f2=sin: r * f2(a1 + t * a) + (r1 + t * r) * a * f1(a1 + t * a)
 
-def arc3p_(x1, y1, x2, y2, x3, y3, 
+def arc3p_(x1, y1, x2, y2, x3, y3,
     # localize names:
     fx=fx_arc3p, fy=fy_arc3p, dx=dx_arc3p, dy=dy_arc3p, plt = plot_function,
     hp = hypot, at = atan2, PI2 = PI2, IP = IP, round = round, abs = abs,
@@ -3297,7 +3354,7 @@ def arc3p_(x1, y1, x2, y2, x3, y3,
     return plt(
         fx, fy, round(abs(a) * 1.5 * IP) + 2, 0, 1, 1, 1, 
         0, 1, 0, 1, 0, 0, dx, dy, 0, 0, None 
-    )
+    )   
 
 def arc3p(p1, p2, p3,
     # localize names:

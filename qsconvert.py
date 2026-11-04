@@ -913,7 +913,7 @@ def process_path(path_data, svg_paths, etype, el, p_dns, p_rot, p_p1, counter, b
             svg_paths.append(text_elem)
         return {DRAWABLEID: True, 'cmd': cmd, 'dtype': etype, PATH: path_data, 'baked_path': baked_data, TRANSFORM: s_tr, 'transform_d': t_, 'transform_matrix': t_matrix, 'cirdat': cirdat_, FILLCOLOR: fill, LINECOLOR: stroke, LINEWIDTH: sw, LINETYPE: lt, ID: id_, SVG: text_elem, BOUNDS: _b}
 
-def get_path_data(etype, qspice, p1=(0, 0), p2=(0, 0), p1_scaled=(0, 0), p2_scaled=(0, 0), p3_scaled=(0, 0), p4_scaled=(0, 0), 
+def get_path_data(etype, qspice, p1=(0, 0), p2=(0, 0), p1_scaled=(0, 0), p2_scaled=(0, 0), p3_scaled=(0, 0), p4_scaled=(0, 0), diagonal = False, mirror = 1,
     # localize names:
     line = q.line, 
     rect = q.rect, 
@@ -934,22 +934,22 @@ def get_path_data(etype, qspice, p1=(0, 0), p2=(0, 0), p1_scaled=(0, 0), p2_scal
     if etype == LINE:
         path_data = line(p1_scaled, p2_scaled)
     elif etype == RECT:
-        path_data = rect(p1_scaled, p2_scaled)
+        path_data = rect(p1_scaled, p2_scaled, diagonal)
         if EXTRA_10 in qspice:
             etype = qspice[TYPE] = IMAGE
     elif etype == TRIANGLE:
         path_data = triangle(p1_scaled, p2_scaled, p3_scaled)
     elif etype == COIL:
-        path_data = coil(p1_scaled, p2_scaled)
+        path_data = coil(p1_scaled, p2_scaled, diagonal, mirror)
     elif etype == ZIGZAG:
-        path_data = zigzag(p1_scaled, p2_scaled)
+        path_data = zigzag(p1_scaled, p2_scaled, diagonal)
     elif etype in (ELLIPSE, CIRCLE):
         if rcomp(abs(get_aspect(p1, p2))) == 1:
             qspice[TYPE] = CIRCLE
             etype = CIRCLE
-        path_data = ellipse(p1_scaled, p2_scaled)
+        path_data = ellipse(p1_scaled, p2_scaled, 5, diagonal)
     elif etype == ARC:
-        path_data = arc(p1_scaled, p2_scaled, p3_scaled, p4_scaled)
+        path_data = arc(p1_scaled, p2_scaled, p3_scaled, p4_scaled, diagonal)
     elif etype == ARC3P:
         path_data = arc3p(p1_scaled, p2_scaled, p3_scaled)
     elif etype == PATH:
@@ -986,7 +986,7 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
 
     p_rot = p_rot_ if p_rot_ is not None else [] if is_symbol else el.get(PARENT_ROTATION, [])
     
-    p1 = p1_ if (p1_ is not None) else el.get(P1)
+    p1 = p1_ if (p1_ is not None) else el.get(P1, (0, 0))
    
     p2 = el.get(P2)
     p3 = el.get(P3)
@@ -997,10 +997,15 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
     p3_scaled = tr(p3)
     p4_scaled = tr(p4)
     lp1_scaled = tr(lp1)
+    rot = el.get(ROTATION, 0)
+    diagonal = isdiagonal(rot)
+
+    mmap = {0: 1, 1: 1, 2: -1, 3: -1, 4: 1, 5: -1, 6: 1, 7: 1}
+    mirror = mmap[rot]
 
     path_data = []
     if do_path and (etype in ANNOTATION_DEFS):
-        path_data, etype = gpd(etype, el, p1, p2, p1_scaled, p2_scaled, p3_scaled, p4_scaled)
+        path_data, etype = gpd(etype, el, p1, p2, p1_scaled, p2_scaled, p3_scaled, p4_scaled, diagonal, mirror)
         if etype == IMAGE:
             process_image(el, counter, svg_paths, b, mark_bounds, show)
             path_data = None    
@@ -1285,10 +1290,10 @@ def generate_svg(
         # *** begin paths ***
         elif etype in ANNOTATION_DEFS:
             if 'used' not in qspice[PARENT]:
-                path_data, etype = get_path_data(etype, qspice, p1, p2, p1_scaled, p2_scaled, p3_scaled, p4_scaled)
-                if etype == IMAGE:
-                    process_image(qspice, counter, svg_paths, b, mark_bounds=MARK_BOUNDS)
-                    path_data = None
+                draw_fundamental(qspice, sch_level, svg_paths, counter, b, conn_map, 
+                    wire_endpoints, MARK_BOUNDS, None, p_p1, p_dns, p_rot, 
+                    True, True, True, True, None, 1, 
+                    False, False, False, p1, etype)                
         # *** end paths ***
         elif (etype in (TEXT, PIN, PINLABEL)):
             if etype == PIN:
