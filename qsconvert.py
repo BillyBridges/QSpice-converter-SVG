@@ -964,7 +964,7 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
     TYPE = q.TYPE, PARENT = q.PARENT, PARENT_P1 = q.PARENT_P1, 
     PARENT_DONOTSTUFF = q.PARENT_DONOTSTUFF, PARENT_ROTATION = q.PARENT_ROTATION, 
     P1 = q.P1, P2 = q.P2, P3= q.P3, P4 = q.P4, LP1 = q.LP1, IMAGE = q.IMAGE, 
-    stack = q.stack, tr = q.tr, drf = None):
+    stack = q.stack, tr = q.tr, mmap = DIAGONAL_MIRROR_MAP, drf = None):
 # Graphical generation
     Push([])
 
@@ -999,8 +999,6 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
     lp1_scaled = tr(lp1)
     rot = el.get(ROTATION, 0)
     diagonal = isdiagonal(rot)
-    
-    mmap = {0: 1, 1: 1, 2: -1, 3: -1, 4: 1, 5: -1, 6: 1, 7: 1}
     mirror = mmap.get(rot, 1)
 
     path_data = []

@@ -671,6 +671,8 @@ DEG135CW = 5 # 135, 135CW
 DEG90CW = 6 # 90, 90CW
 DEG45CW = 7 # 45, 45CW
 
+DIAGONAL_MIRROR_MAP = {0: 1, 1: 1, 2: -1, 3: -1, 4: 1, 5: -1, 6: 1, 7: 1}
+
 # Rotation mapping
 ROTATION_MAP = SafeDict({
     DEG0: 0,
