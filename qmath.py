@@ -4512,7 +4512,7 @@ def copy_qspice(d, type_include = (), key_exclude = (), exclude_drawables = True
                         else:
                             o[k] = v
 
-BrandPath = QSpice({TYPE: PATH, P1: (0, 0), PATHDATA: Qorvo, U1: 0, LINEWIDTH: -1, LINETYPE: 0, LINECOLOR: 0, FILLCOLOR: 0, U2: -1, HBLOCK: 0, PINASSOC: -1, U3: -1, ISTEXT: 1})
+BrandPath = QSpice({TYPE: PATH, P1: (0, 0), PATHDATA: Qorvo, LINEWIDTH: -1, LINETYPE: 0, LINECOLOR: 0, FILLCOLOR: 0, HBLOCK: 0, PINASSOC: -1, LOOKUPINDEX: -1, ISTEXT: 1})
 BrandSymbol = QSpice({TYPE: SYMBOL, SYMBOLNAME: 'Qorvo', f'{EXTRA_}1': BrandPath, CASTABLE: True})
 fill_metadata(BrandSymbol)
 
