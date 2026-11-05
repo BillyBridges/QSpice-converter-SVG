@@ -35,8 +35,10 @@
 # modules that start with "qs" to the same folder as the script,
 # without the need to modify the original modules. The main module
 # identify such modules, loads them and call their functions
-# "init_unit(main_unit, pstr)" after the module is loaded, and
-# "post_parameter(pstr)" after conversion parameters are loaded.
+# "init_unit(pstr)" after the module is loaded, "post_parameter(pstr)"
+# after conversion parameters are loaded, and then, finally,
+# patch(pstr) after all the functions and parameters are declared,
+# and before processing the files.
 
 # Run script with /? flag to see the usage information.
 
@@ -90,7 +92,7 @@ requires_virgin_flat_parse = False
 
 def real_debug_line_logic(s):
     if echo: print(s)
-    
+
 dbinfo = real_debug_line_logic
 
 # Hide function "##dbline"'s declaration so we can comment out
@@ -106,7 +108,7 @@ saved_files =[]
 is_symbol = False
 Abstract = True
 # Constants and mathematical functions in qmath.py
-            
+
 # Import all the parameters that were set
 # in the "qmath" module from the command line:
 try:
@@ -123,7 +125,7 @@ except Exception as e:
 # in qmath utilize the parameters set by the user or
 # calculated by "setup_parameters".
 try:
-    ext_post_parameter(loaded_units)
+    post_parameter_unit_dict(loaded_units)
 except Exception as e:
     s = f"Fatal Error while external post parameter processing ({type(e).__name__}): {e}"
     handle_exception(s)
@@ -232,7 +234,7 @@ def get_text_svg(transform, font, fontsize, color, anchor, baseline, id_, safe_l
             for i in notpos:
                 path_data = get_char_overline(line[0], i, anchor, baseline, FONT, fs, line[2], line[3])
                 push(QSpice({TYPE: PATH, P1: (0, 0), PATHDATA: path_data, STROKEWIDTH: (NOT_STROKE_WIDTH*fs)/160, LINETYPE: 0, LINECOLOR: color, FILLCOLOR: -1}))
-    
+
     if len(sls) > 1:
         tspans_l = []
         for sl in sls:
@@ -249,7 +251,7 @@ def get_text_svg(transform, font, fontsize, color, anchor, baseline, id_, safe_l
         f'{fill_str} text-anchor="{anchor}" dominant-baseline="{baseline}" '
         f'xml:space="preserve" id="{f"{id_}_t" if gopen else id_}">{tspans}</text>'
     )
-    
+
     out = []
     if gopen:
         out.append(f'<g id="{id_}_g"{transform}>')
@@ -260,7 +262,7 @@ def get_text_svg(transform, font, fontsize, color, anchor, baseline, id_, safe_l
         out.append('</g>')
     Pop()
     return "\n".join(out)
-    
+
 def translate_text(safe_lines, raw_text, abstract, fs, etype, el, vis, ispin, stype, ptype, insname, invisible, depth, color, mirror, crv, aprin, angle, diagonal, anchor, baseline, rotation):
 # To patch
     return safe_lines
@@ -269,15 +271,15 @@ def process_text(etype, el, counter, svg_paths, b, show = True, mark_bounds = Fa
 # Process the position and appearence of text elements, except net names
     raw_text = el.get(STRG) if (etype in (TEXT, 'net_desc')) else (el.get(PINNAME) if (etype in (PIN, PINLABEL)) else el.get(NETNAME))
 
-    if not raw_text: 
+    if not raw_text:
         return CONTINUE
     invisible = False
     # Check visibility (IsCommentOrVisible)
     # 0=Visible, 1=Comment, 2=Invisible, 3=Invisible Comment
     vis = int(el.get(ISCOMMENTORVISIBLE, 0))
-    if vis >= 2 and (not is_symbol): 
+    if vis >= 2 and (not is_symbol):
         invisible = True
-    
+
     ptype = None
     parent = el.get(PARENT)
     if isinstance(parent, QSpice):
@@ -324,11 +326,11 @@ def process_text(etype, el, counter, svg_paths, b, show = True, mark_bounds = Fa
 
     orient = int(el.get(ORIENTATION, 0))
     anchor, baseline, rotation, jb, rb = get_text_alignment(orient, ispin)
-    if HIDDEN in (baseline, anchor): 
+    if HIDDEN in (baseline, anchor):
         return CONTINUE
 
     color = el.get(FONTCOLOR, 0x1000000)
- 
+
     if (hex_to_int(color) > 0xFFFFFF):
         if vis == 0:
             color = get_color(COMPONENT_ATT_COLOR, _p_dns) if ptype == SYMBOL else get_color(SPICE_STATEMENT_COLOR, _p_dns)
@@ -338,7 +340,7 @@ def process_text(etype, el, counter, svg_paths, b, show = True, mark_bounds = Fa
             color = get_color(DONOTSTUFF_COLOR, 1)
     else:
         color = get_color(color, _p_dns)
-        
+
     fs = el.get(FONTSIZE, 1) * FONT_SCALE * SCALE_FACTOR
     if crv and (not is_symbol):
         fs *= RESISTOR_CENTER_VALUE_FONT_RESCALE
@@ -523,7 +525,7 @@ def process_text(etype, el, counter, svg_paths, b, show = True, mark_bounds = Fa
             if (b is not None):
                 for l in safe_lines:
                     get_text_bounds(l[0], FONT, fs, anchor, CENTRAL, b, l[2], l[3], svg_paths, (mark_bounds and show), counter, tr_s, _id = id_)
-    
+
     return {DRAWABLEID: True, 'cmd': TEXT, 'dtype': etype, TRANSFORM: tr_s, 'transform_d': t_, 'transform_matrix': t_matrix, 'font': FONT, FONTSIZE: fs, FILLCOLOR: color, 'text_anchor': anchor, 'dominant_baseline': CENTRAL, ID: id_, 'lines': lines, 'safe_lines': safe_lines, SVG: text_svg, BOUNDS: _b}
 
 def get_text_alignment(orientation_code, IsPin = False):
@@ -714,20 +716,20 @@ def get_transform(el, p = None, rot = None, mirror = None, angle = None, scale =
 
 def get_path_transform(etype, el, p_p1, p_rot,
     # localize names:
-    PIN = q.PIN, 
-    PINLABEL = q.PINLABEL, 
-    tr = q.tr, 
-    TRANSLATE = q.TRANSLATE, 
-    SCALE = q.SCALE, 
-    len = len, 
-    range = range, 
-    max = max, 
-    ROTATION_MAP = q.ROTATION_MAP, 
-    ROTATE = q.ROTATE, 
-    isdiagonal = q.isdiagonal, 
-    demirror = q.demirror, 
-    NET = q.NET, 
-    SQRT2 = q.SQRT2, 
+    PIN = q.PIN,
+    PINLABEL = q.PINLABEL,
+    tr = q.tr,
+    TRANSLATE = q.TRANSLATE,
+    SCALE = q.SCALE,
+    len = len,
+    range = range,
+    max = max,
+    ROTATION_MAP = q.ROTATION_MAP,
+    ROTATE = q.ROTATE,
+    isdiagonal = q.isdiagonal,
+    demirror = q.demirror,
+    NET = q.NET,
+    SQRT2 = q.SQRT2,
     ANGLE = q.ANGLE,
     combine_rotations = q.combine_rotations
 ):
@@ -744,7 +746,7 @@ def get_path_transform(etype, el, p_p1, p_rot,
                     _transform.append((SCALE, -1, 1))
                     rot_code -= 8
                 angle = ROTATION_MAP.get(rot_code, 0)
- 
+
                 _transform.append((ROTATE, angle))
         if (isdiagonal(demirror(_p_rot))) and (etype != NET):
             _transform.append((SCALE, SQRT2))
@@ -756,65 +758,65 @@ def get_path_transform(etype, el, p_p1, p_rot,
 def process_path(path_data, svg_paths, etype, el, p_dns, p_rot, p_p1, counter, b, _transform = None, sw_scale = 1, show = True, mark_bounds = False, remove_stroke = False, remove_fill = False, bound_transform = None,
 
     # localize names:
-    PARENT = q.PARENT, 
-    QSpice = q.QSpice, 
-    TYPE = q.TYPE, 
-    SYMBOL = q.SYMBOL, 
-    JUNCTION = q.JUNCTION, 
-    JUMPER = q.JUMPER, 
-    LINECOLOR = q.LINECOLOR, 
-    JUNCTION_COLOR = q.JUNCTION_COLOR, 
-    FILLCOLOR = q.FILLCOLOR, 
-    JUNCTION_SW = q.JUNCTION_SW, 
-    SCALE_FACTOR = q.SCALE_FACTOR, 
-    TAP = q.TAP, 
-    TAP_COLOR = q.TAP_COLOR, 
-    TAP_SW = q.TAP_SW, 
-    PORTBG = q.PORTBG, 
-    PORT_COLOR = q.PORT_COLOR, 
-    PORT_STROKE_COLOR = q.PORT_STROKE_COLOR, 
-    PORT_SW = q.PORT_SW, 
-    PIN = q.PIN, 
-    PIN_FILL_COLOR = q.PIN_FILL_COLOR, 
-    PIN_STROKE_COLOR = q.PIN_STROKE_COLOR,  
-    PIN_SW = q.PIN_SW, 
-    HBLOCK = q.HBLOCK, 
-    WIRE_COLOR = q.WIRE_COLOR, 
-    WIRE = q.WIRE, 
-    LINEWIDTH = q.LINEWIDTH, 
-    STROKEWIDTH = q.STROKEWIDTH, 
-    STROKE_STEP = q.STROKE_STEP, 
-    NATIVE_SYMBOL_SCALE = q.NATIVE_SYMBOL_SCALE, 
-    NON_DEFAULT_STROKE_WIDTH = q.NON_DEFAULT_STROKE_WIDTH, 
-    STROKE_WIDTH = q.STROKE_WIDTH, 
-    ISTEXT = q.ISTEXT, 
-    CASTABLE = q.CASTABLE, 
-    LINETYPE = q.LINETYPE, 
-    get_path_transform = get_path_transform, 
-    simplify_transforms = q.simplify_transforms, 
-    apply_transform = q.apply_transform, 
-    CIRCLE = q.CIRCLE, 
-    P1 = q.P1, 
-    P2 = q.P2, 
-    hypot = math.hypot, 
-    TRQS2 = q.TRQS2, 
-    rpub = q.rpub, 
-    to_svg_string = q.to_svg_string, 
-    PATH = q.PATH, 
-    virgin_bounds = q.virgin_bounds, 
-    count = q.count, 
-    get_path_bounds = get_path_bounds, 
+    PARENT = q.PARENT,
+    QSpice = q.QSpice,
+    TYPE = q.TYPE,
+    SYMBOL = q.SYMBOL,
+    JUNCTION = q.JUNCTION,
+    JUMPER = q.JUMPER,
+    LINECOLOR = q.LINECOLOR,
+    JUNCTION_COLOR = q.JUNCTION_COLOR,
+    FILLCOLOR = q.FILLCOLOR,
+    JUNCTION_SW = q.JUNCTION_SW,
+    SCALE_FACTOR = q.SCALE_FACTOR,
+    TAP = q.TAP,
+    TAP_COLOR = q.TAP_COLOR,
+    TAP_SW = q.TAP_SW,
+    PORTBG = q.PORTBG,
+    PORT_COLOR = q.PORT_COLOR,
+    PORT_STROKE_COLOR = q.PORT_STROKE_COLOR,
+    PORT_SW = q.PORT_SW,
+    PIN = q.PIN,
+    PIN_FILL_COLOR = q.PIN_FILL_COLOR,
+    PIN_STROKE_COLOR = q.PIN_STROKE_COLOR,
+    PIN_SW = q.PIN_SW,
+    HBLOCK = q.HBLOCK,
+    WIRE_COLOR = q.WIRE_COLOR,
+    WIRE = q.WIRE,
+    LINEWIDTH = q.LINEWIDTH,
+    STROKEWIDTH = q.STROKEWIDTH,
+    STROKE_STEP = q.STROKE_STEP,
+    NATIVE_SYMBOL_SCALE = q.NATIVE_SYMBOL_SCALE,
+    NON_DEFAULT_STROKE_WIDTH = q.NON_DEFAULT_STROKE_WIDTH,
+    STROKE_WIDTH = q.STROKE_WIDTH,
+    ISTEXT = q.ISTEXT,
+    CASTABLE = q.CASTABLE,
+    LINETYPE = q.LINETYPE,
+    get_path_transform = get_path_transform,
+    simplify_transforms = q.simplify_transforms,
+    apply_transform = q.apply_transform,
+    CIRCLE = q.CIRCLE,
+    P1 = q.P1,
+    P2 = q.P2,
+    hypot = math.hypot,
+    TRQS2 = q.TRQS2,
+    rpub = q.rpub,
+    to_svg_string = q.to_svg_string,
+    PATH = q.PATH,
+    virgin_bounds = q.virgin_bounds,
+    count = q.count,
+    get_path_bounds = get_path_bounds,
     pub_color = q.pub_color,
     get_color = get_color,
-    ROUND = q.ROUND, 
-    get_linetype_string = q.get_linetype_string, 
-    DRAWABLEID = q.DRAWABLEID, 
-    TRANSFORM = q.TRANSFORM, 
-    ID = q.ID, 
-    SVG = q.SVG, 
-    BOUNDS = q.BOUNDS, 
+    ROUND = q.ROUND,
+    get_linetype_string = q.get_linetype_string,
+    DRAWABLEID = q.DRAWABLEID,
+    TRANSFORM = q.TRANSFORM,
+    ID = q.ID,
+    SVG = q.SVG,
+    BOUNDS = q.BOUNDS,
     isinstance = isinstance,
-    max = max     
+    max = max
 ):
     if isinstance(p_dns, list):
         _p_dns = max(p_dns) if p_dns else 0
@@ -827,7 +829,7 @@ def process_path(path_data, svg_paths, etype, el, p_dns, p_rot, p_p1, counter, b
         ptype = parent.get(TYPE)
         if ptype:
             issymbol = ptype == SYMBOL
-        
+
     if path_data:
         if etype in (JUNCTION, JUMPER):
             stroke = get_color(el.get(LINECOLOR, JUNCTION_COLOR), _p_dns, False, 0, issymbol)
@@ -844,7 +846,7 @@ def process_path(path_data, svg_paths, etype, el, p_dns, p_rot, p_p1, counter, b
         elif etype == PIN:
             fill = get_color(el.get(FILLCOLOR, PIN_FILL_COLOR), _p_dns, True, 0, issymbol)
             stroke = get_color(el.get(LINECOLOR, PIN_STROKE_COLOR), _p_dns, False, 0, issymbol)
-            sw = el.get(STROKEWIDTH, PIN_SW * NATIVE_SYMBOL_SCALE * SCALE_FACTOR)            
+            sw = el.get(STROKEWIDTH, PIN_SW * NATIVE_SYMBOL_SCALE * SCALE_FACTOR)
         elif etype == 'Qorvo':
             fill = get_color(el.get(FILLCOLOR), _p_dns, True, 0, issymbol)
             stroke = get_color(el.get(FILLCOLOR), _p_dns, False, 0, issymbol)
@@ -915,13 +917,13 @@ def process_path(path_data, svg_paths, etype, el, p_dns, p_rot, p_p1, counter, b
 
 def get_path_data(etype, qspice, p1=(0, 0), p2=(0, 0), p1_scaled=(0, 0), p2_scaled=(0, 0), p3_scaled=(0, 0), p4_scaled=(0, 0), diagonal = False, mirror = 1,
     # localize names:
-    line = q.line, 
-    rect = q.rect, 
-    triangle = q.triangle, 
-    coil = q.coil, 
-    zigzag = q.zigzag, 
-    ellipse = q.ellipse, 
-    arc = q.arc, 
+    line = q.line,
+    rect = q.rect,
+    triangle = q.triangle,
+    coil = q.coil,
+    zigzag = q.zigzag,
+    ellipse = q.ellipse,
+    arc = q.arc,
     arc3p = q.arc3p,
     rcomp = q.rcomp,
     get_aspect = q.get_aspect,
@@ -959,11 +961,11 @@ def get_path_data(etype, qspice, p1=(0, 0), p2=(0, 0), p1_scaled=(0, 0), p2_scal
 
 def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoints, mark_bounds=False, _filter_ = None, p_p1_ = None, p_dns_ = None, p_rot_ = None, do_path = True, do_text = True, retrieve = False, show = True, transform = None, sw_scale = 1, remove_stroke = False, remove_fill = False, abstract = False, p1_ = None, stk = False, etype_ = None, bound_transform = None,
     # localize names:
-    gpd = get_path_data, Push = q.Push, Pop = q.Pop, DRAWABLE_DEFS = q.DRAWABLE_DEFS, 
+    gpd = get_path_data, Push = q.Push, Pop = q.Pop, DRAWABLE_DEFS = q.DRAWABLE_DEFS,
     ANNOTATION_DEFS = q.ANNOTATION_DEFS, pcp = process_path,
-    TYPE = q.TYPE, PARENT = q.PARENT, PARENT_P1 = q.PARENT_P1, 
-    PARENT_DONOTSTUFF = q.PARENT_DONOTSTUFF, PARENT_ROTATION = q.PARENT_ROTATION, 
-    P1 = q.P1, P2 = q.P2, P3= q.P3, P4 = q.P4, LP1 = q.LP1, IMAGE = q.IMAGE, 
+    TYPE = q.TYPE, PARENT = q.PARENT, PARENT_P1 = q.PARENT_P1,
+    PARENT_DONOTSTUFF = q.PARENT_DONOTSTUFF, PARENT_ROTATION = q.PARENT_ROTATION,
+    P1 = q.P1, P2 = q.P2, P3= q.P3, P4 = q.P4, LP1 = q.LP1, IMAGE = q.IMAGE,
     stack = q.stack, tr = q.tr, mmap = DIAGONAL_MIRROR_MAP, drf = None):
 # Graphical generation
     Push([])
@@ -974,9 +976,9 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
         ptype = parent.get(TYPE)
     else:
         ptype = None
-    
+
     _filter = _filter_ if (_filter_ is not None) else DRAWABLE_DEFS
-    if etype not in _filter: 
+    if etype not in _filter:
         Pop()
         return 0
 
@@ -985,9 +987,9 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
     p_dns = p_dns_ if (p_dns_ is not None) else [] if is_symbol else el.get(PARENT_DONOTSTUFF, [])
 
     p_rot = p_rot_ if p_rot_ is not None else [] if is_symbol else el.get(PARENT_ROTATION, [])
-    
+
     p1 = p1_ if (p1_ is not None) else el.get(P1, (0, 0))
-   
+
     p2 = el.get(P2)
     p3 = el.get(P3)
     p4 = el.get(P4)
@@ -1006,7 +1008,7 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
         path_data, etype = gpd(etype, el, p1, p2, p1_scaled, p2_scaled, p3_scaled, p4_scaled, diagonal, mirror)
         if etype == IMAGE:
             process_image(el, counter, svg_paths, b, mark_bounds, show)
-            path_data = None    
+            path_data = None
     elif do_path and (etype in (JUMPER, JUNCTION)):
         if abstract:
             p1_scaled = (0, 0)
@@ -1039,7 +1041,7 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
         # Check if net is at the end of a wire
         ang = get_net_angle(el, wire_endpoints, elements)
         net_pos = el[P1]
-        if not abstract: 
+        if not abstract:
             p_p1 = [net_pos]
         vector = wire_endpoints.get(tuple(net_pos))
         net_name = dequote(str(el.get(NETNAME, ""))).upper()
@@ -1069,8 +1071,8 @@ def draw_fundamental(el, elements, svg_paths, counter, b, conn_map, wire_endpoin
     Pop()
 
 draw_fundamental.__defaults__ = draw_fundamental.__defaults__[:-1] + (draw_fundamental,)
-    
-def draw_qspice(qspice, order, svg_paths, b = None, _filter = None, counter = None, transform = None, p_p1 = None, p_dns = None, p_rot = None, do_path = True, do_text = True, mark_bounds = False, retrieve = False, show = True, sw_scale = 1, remove_stroke = False, remove_fill = False, abstract = False, p1 = None, etype = None, 
+
+def draw_qspice(qspice, order, svg_paths, b = None, _filter = None, counter = None, transform = None, p_p1 = None, p_dns = None, p_rot = None, do_path = True, do_text = True, mark_bounds = False, retrieve = False, show = True, sw_scale = 1, remove_stroke = False, remove_fill = False, abstract = False, p1 = None, etype = None,
     # localize names:
     drw = draw_fundamental, gfo = q.get_flat_object, TYPE = q.TYPE,
     isinstance = isinstance, QSpice = q.QSpice
@@ -1087,22 +1089,22 @@ def draw_qspice(qspice, order, svg_paths, b = None, _filter = None, counter = No
     # We store the sum of X and Y vector components to perform a proper circular average.
     wire_endpoints = qspice.get('wire_endpoints', {})
     elements = gfo(qspice, order)
-    
+
     for el in elements:
-        drw(el, elements, svg_paths, counter, b, conn_map, 
-            wire_endpoints, mark_bounds, _filter, p_p1, p_dns, p_rot, 
-            do_path, do_text, retrieve, show, transform, sw_scale, 
+        drw(el, elements, svg_paths, counter, b, conn_map,
+            wire_endpoints, mark_bounds, _filter, p_p1, p_dns, p_rot,
+            do_path, do_text, retrieve, show, transform, sw_scale,
             remove_stroke, remove_fill, abstract, p1, etype)
 
 def generate_svg_flat(qspice, b = None):
-# Without symbol abstraction, this function can actually 
-# draw the elements in the same order as QSpice 
+# Without symbol abstraction, this function can actually
+# draw the elements in the same order as QSpice
     global is_symbol, Abstract
 
     Abstract = False
 
     is_symbol = detect_symbol_file(qspice) is not None
- 
+
     if b is None:
         b = virgin_bounds()
 
@@ -1277,9 +1279,9 @@ def generate_svg(
             for r in p_rot:
                 if isdiagonal(r): s *= TRQS2
             qspice[TRANSFORM] = t + get_transform(qspice, p = p1, scale = s)
-            process_symbol(qspice, svg_paths, p_p1, p_rot, counter, b, mark_bounds=MARK_BOUNDS)          
+            process_symbol(qspice, svg_paths, p_p1, p_rot, counter, b, mark_bounds=MARK_BOUNDS)
             qspice[TRANSFORM] = t + get_transform(qspice, p = p2, scale = s)
-            process_symbol(qspice, svg_paths, p_p1, p_rot, counter, b, mark_bounds=MARK_BOUNDS)    
+            process_symbol(qspice, svg_paths, p_p1, p_rot, counter, b, mark_bounds=MARK_BOUNDS)
             push(QSpice({TYPE: LINE, P1: p1, P2: p2, STROKEWIDTH: STROKE_WIDTH * SCALE_FACTOR * NATIVE_SYMBOL_SCALE * JUMPER_LINE_SCALE, PARENT: content, PARENT_P1: p_p1, PARENT_ROTATION: p_rot, LINECOLOR: WIRE_COLOR}))
         elif etype == WIRE:
             path_data = line(p1_scaled, p2_scaled)
@@ -1288,10 +1290,10 @@ def generate_svg(
         # *** begin paths ***
         elif etype in ANNOTATION_DEFS:
             if 'used' not in qspice[PARENT]:
-                draw_fundamental(qspice, sch_level, svg_paths, counter, b, conn_map, 
-                    wire_endpoints, MARK_BOUNDS, None, p_p1, p_dns, p_rot, 
-                    True, True, True, True, None, 1, 
-                    False, False, False, p1, etype)                
+                draw_fundamental(qspice, sch_level, svg_paths, counter, b, conn_map,
+                    wire_endpoints, MARK_BOUNDS, None, p_p1, p_dns, p_rot,
+                    True, True, True, True, None, 1,
+                    False, False, False, p1, etype)
         # *** end paths ***
         elif (etype in (TEXT, PIN, PINLABEL)):
             if etype == PIN:
@@ -1302,7 +1304,7 @@ def generate_svg(
                 if ((not is_connected(abs_pos, conn_map)) and (not netname)) or is_symbol:
                     scolor = get_color(PIN_STROKE_COLOR, 1 if netname else combine_dnss(p_dns))
                     if not scolor: scolor = 0
-                    fcolor = get_color(None if netname else PIN_FILL_COLOR, combine_dnss(p_dns), True) 
+                    fcolor = get_color(None if netname else PIN_FILL_COLOR, combine_dnss(p_dns), True)
                     qspice[CASTABLE] = True
                     process_symbol(qspice, svg_paths, [], [], counter, b, mark_bounds=MARK_BOUNDS, cast=f'stroke="{pub_color(scolor)}" fill="{pub_color(fcolor)}"')
             else:
@@ -1350,7 +1352,7 @@ def hash_symbol_path(symbol):
                 l.append("»")
         else:
             etype = None
-        
+
         return 0
 
     f_dict = {'value_fb': _value, 'dict_fb': _dict}
@@ -1494,16 +1496,16 @@ def register_symbol(symbol, symbols, counter, mark_bounds=False):
     if hpath and hpins:
         out[DIAGONAL] = diagonal
         out[DONOTSTUFF] = dns
-        out['scale'] = sw_scale    
+        out['scale'] = sw_scale
         count(stype, counter)
         _id = f'{stype}_{counter[stype]}'
         symbols[hpath], symbols[hpins] = spath, spins
         svg = [f'<symbol id="{_id}" overflow="visible">']
         use_symbol(spath, spath, svg, [], [], counter, None)
         use_symbol(spins, spins, svg, [], [], counter, None)
-        svg.append(f'</symbol>')  
+        svg.append(f'</symbol>')
         out[BOUNDS] = b
-        out[SVG] = svg        
+        out[SVG] = svg
         out['spath'] = spath
         out['spath'][PARENT] = out
         out['spath'][KEY] = 'spath'
@@ -1530,7 +1532,7 @@ def register_symbol_path(symbol, counter, b = None, mark_bounds=False):
     fill_metadata(out)
     if etype == JUMPER:
         out[TYPE] = JUNCTION
- 
+
     if PARENT in symbol:
         dns = combine_dnss(symbol.get(PARENT_DONOTSTUFF, []))
         p_rot = symbol[PARENT].get(ROTATION, 0)
@@ -1551,13 +1553,13 @@ def register_symbol_path(symbol, counter, b = None, mark_bounds=False):
 
     svg.append(f'<symbol id="{_id}" overflow="visible">')
 
-    draw_qspice(out, SYMBOL_DRAWING_ORDER, svg, b, _filter = DRAWABLE_DEFS, counter = counter, 
-        transform = None, p_dns = [dns], do_path = True, do_text = False, 
+    draw_qspice(out, SYMBOL_DRAWING_ORDER, svg, b, _filter = DRAWABLE_DEFS, counter = counter,
+        transform = None, p_dns = [dns], do_path = True, do_text = False,
         mark_bounds = False, retrieve = True, show = True, sw_scale = sw_scale,
         abstract = True, remove_fill = castable, remove_stroke = castable)
 
     svg.append(f'</symbol>')
-    
+
     if len(svg) == 2:
         uncount(stype, counter)
         return None
@@ -1588,20 +1590,20 @@ def register_symbol_pins(symbol, counter, b = None, mark_bounds=False):
     _id = f'{stype}_{counter[stype]}'
     def function(v, c):
         if FONTSIZE in c:
-            c[FONTSIZE] *= sw_scale     
-    out = copy_qspice(symbol, (PIN, PINLABEL), function=function, exclude_inheritance=False)   
+            c[FONTSIZE] *= sw_scale
+    out = copy_qspice(symbol, (PIN, PINLABEL), function=function, exclude_inheritance=False)
     out[ID] = _id
     out[DIAGONAL] = diagonal
     out[DONOTSTUFF] = dns
     out['sw_scale'] = sw_scale
 
     svg.append(f'<symbol id="{_id}" overflow="visible">')
-    
-    draw_qspice(out, SYMBOL_DRAWING_ORDER, svg, b, _filter = (PIN, PINLABEL), counter = counter, 
-        transform = None, p_dns = [dns], do_path = False, do_text = True, 
+
+    draw_qspice(out, SYMBOL_DRAWING_ORDER, svg, b, _filter = (PIN, PINLABEL), counter = counter,
+        transform = None, p_dns = [dns], do_path = False, do_text = True,
         mark_bounds = False, retrieve = True, show = True, sw_scale = sw_scale,
-        abstract = True, remove_fill = castable, remove_stroke = castable)  
-        
+        abstract = True, remove_fill = castable, remove_stroke = castable)
+
     svg.append(f'</symbol>')
 
     if len(svg) == 2:
@@ -1663,7 +1665,7 @@ def process_symbol(qspice, svg_paths, p_p1, p_rot, counter, b, mark_bounds=False
                     dbinfo("Symbol:")
                     print_qspice(qspice)
                     dbinfo("\n\nOutput files may be corrupt!\n\n")
-                    
+
     return oh, oout, ouse
 
 def get_use_bounds(u_id, symbol, transform, b, svg_paths, mark, counter):
@@ -1683,7 +1685,7 @@ def get_use_bounds(u_id, symbol, transform, b, svg_paths, mark, counter):
     _b = virgin_bounds()
 
     def _dict(d, f_dict, aux, depth, k, parent):
-        if DRAWABLEID in d: 
+        if DRAWABLEID in d:
             path_data = None
             _id = d.get(ID)
             if PATH in d:
@@ -1694,9 +1696,9 @@ def get_use_bounds(u_id, symbol, transform, b, svg_paths, mark, counter):
                 sw = 0
             baked_path = apply_transform(path_data, transform)
             get_path_bounds(baked_path, [b, _b], svg_paths, False, counter, sw, _id = None)
-            
+
         traverse_numeric(d, f_dict, aux, depth)
- 
+
         return 0
 
     f_dict = {'dict_fb': _dict}
@@ -1822,7 +1824,7 @@ def get_full_svg(obj, b, canvas_padding, canvas_width, canvas_height, bg, paths)
 
     obj, b, canvas_padding, canvas_width, canvas_height, bg, paths = ext_defs(obj, b, canvas_padding, canvas_width, canvas_height, bg, paths)
     paths.close_defs()
-    
+
     # Generate the background rectangle
     # Note: We put this BEFORE the <g id="schematic"> so it sits behind the drawing
     min_x, min_y = b[MIN_X] - canvas_padding, b[MIN_Y] - canvas_padding
@@ -1878,7 +1880,7 @@ def process_file(filename, qtr, bg, embed_font):
                     start_time = time.perf_counter()
                     f_virgin_obj = parse(file_content)
                     end_time = time.perf_counter()
-                    dbinfo(f'Parsing took {end_time - start_time} seconds.')                    
+                    dbinfo(f'Parsing took {end_time - start_time} seconds.')
                 except Exception as e:
                     s = f"Unexpected Error while parsing QSpice file ({type(e).__name__}): {e}"
                     handle_exception(s)
@@ -1888,7 +1890,7 @@ def process_file(filename, qtr, bg, embed_font):
                     start_time = time.perf_counter()
                     obj = parse(file_content)
                     end_time = time.perf_counter()
-                    dbinfo(f'Parsing took {end_time - start_time} seconds.') 
+                    dbinfo(f'Parsing took {end_time - start_time} seconds.')
                 except Exception as e:
                     s = f"Unexpected Error while parsing QSpice file ({type(e).__name__}): {e}"
                     handle_exception(s)
@@ -2025,7 +2027,7 @@ def process_commands(args):
     if SAVE_FSVG:
         requires_flat_svg_generation = True
         tasklist.append(save_flat_svg)
-    i = -1    
+    i = -1
     while (i < (len(files) - 1)) or stack():
         if stack():
             filename = pop()
@@ -2039,7 +2041,7 @@ def process_commands(args):
     Pop()
 
 if __name__ == "__main__":
-    patch(loaded_units)
+    patch_unit_dict(loaded_units)
     try:
         process_commands(args)
     except Exception as e:

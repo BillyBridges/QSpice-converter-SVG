@@ -148,15 +148,15 @@ PARAMETERS = {
     '/FG':     [LOCAL, 'FOREGROUND_COLOR', 0xFF0000, HEX, 'foreground color'], # Default = 0xFF0000
     '/WC':     [LOCAL, 'WIRE_COLOR', 0xFF0000, HEX, 'wire color'], # Default = 0xFF0000
     '/JC':     [LOCAL, 'JUNCTION_COLOR', 0xFF0000, HEX, 'junction color'], # Default = 0xFF0000
-    '/CAC':    [LOCAL, 'COMPONENT_ATT_COLOR', 0x000000, HEX, 'component attribute color'], # Default = 0x000000    
-    '/ASC':    [LOCAL, 'ANNOTATION_STROKE_COLOR', 0xFF0000, HEX, 'symbol annotation stroke color'], # Default = 0xFF0000 
-    '/SASC':   [LOCAL, 'SYMBOL_ANNOTATION_STROKE_COLOR', 0xFF0000, HEX, 'symbol annotation stroke color'], # Default = 0xFF0000     
-    '/AFC':    [LOCAL, 'SOLID_ANNOTATION_FILL_COLOR', 0x00FFFF, HEX, 'solid annotation_fill color'], # Default = 0x00FFFF  
-    '/SAFC':   [LOCAL, 'SYMBOL_ANNOTATION_FILL_COLOR', 0x00FFFF, HEX, 'symbol annotation_fill color'], # Default = 0x00FFFF 
-    '/CCC':    [LOCAL, 'COMPONENT_COMMENT_COLOR', 0xFF0000, HEX, 'component comment color'], # Default = 0xFF0000      
+    '/CAC':    [LOCAL, 'COMPONENT_ATT_COLOR', 0x000000, HEX, 'component attribute color'], # Default = 0x000000
+    '/ASC':    [LOCAL, 'ANNOTATION_STROKE_COLOR', 0xFF0000, HEX, 'symbol annotation stroke color'], # Default = 0xFF0000
+    '/SASC':   [LOCAL, 'SYMBOL_ANNOTATION_STROKE_COLOR', 0xFF0000, HEX, 'symbol annotation stroke color'], # Default = 0xFF0000
+    '/AFC':    [LOCAL, 'SOLID_ANNOTATION_FILL_COLOR', 0x00FFFF, HEX, 'solid annotation_fill color'], # Default = 0x00FFFF
+    '/SAFC':   [LOCAL, 'SYMBOL_ANNOTATION_FILL_COLOR', 0x00FFFF, HEX, 'symbol annotation_fill color'], # Default = 0x00FFFF
+    '/CCC':    [LOCAL, 'COMPONENT_COMMENT_COLOR', 0xFF0000, HEX, 'component comment color'], # Default = 0xFF0000
     '/HBSC':   [LOCAL, 'HIERARCHICAL_BLOCK_STROKE_COLOR', 0xFF0000, HEX, 'hierarchical block color'], # Default = 0xFF0000
     '/PNSC':   [LOCAL, 'PIN_STROKE_COLOR', 0x000000, HEX, 'pin stroke color'], # Default = 0x000000
-    '/PNFC':   [LOCAL, 'PIN_FILL_COLOR', 0xFFFFFF, HEX, 'pin fill color'], # Default = 0xFFFFFF    
+    '/PNFC':   [LOCAL, 'PIN_FILL_COLOR', 0xFFFFFF, HEX, 'pin fill color'], # Default = 0xFFFFFF
     '/BC':     [LOCAL, 'BACKGROUND_COLOR', 0xE9FFFF, HEX, 'background color'], # Default = 0xE9FFFF
     '/DNC':    [LOCAL, 'DONOTSTUFF_COLOR', 0xAEBFBF, HEX, '"do not stuff" color'], # Default = 0xAEBFBF
     '/QC':     [LOCAL, 'BRAND_COLOR', 0x000000, HEX, 'brand color'], # Default = 0x000000
@@ -937,13 +937,13 @@ g_stack = []
 
 def push(v, s = g_stack):
     s[-1].append(v)
-    
+
 def pop(s = g_stack):
     return s[-1].pop()
-    
+
 def Push(v, s = g_stack):
     s.append(v)
-    
+
 def Pop(s = g_stack):
     return s.pop()
 
@@ -1151,7 +1151,7 @@ def init_unit_dict(unit_dict):
             handle_exception(s)
             raise SystemExit
 
-def patch(unit_dict):
+def patch_unit_dict(unit_dict):
     for key in unit_dict:
         mod = unit_dict[key]
         try:
@@ -1175,7 +1175,7 @@ def inject_namespace(source_mod: types.ModuleType, target_mod: types.ModuleType)
         if not name.startswith("_"):
             setattr(target_mod, name, getattr(source_mod, name))
 
-def ext_post_parameter(unit_dict):
+def post_parameter_unit_dict(unit_dict):
     for key in unit_dict:
         mod = unit_dict[key]
         if hasattr(mod, "post_parameter"):
@@ -1807,7 +1807,7 @@ def tokenize(content):
             start = i
             i += 1
             j = 1
-            while (i < n) and (j > 0): 
+            while (i < n) and (j > 0):
                 i += 1
                 if content[i] == "(": j +=1
                 if content[i] == ")": j -=1
@@ -1818,7 +1818,7 @@ def tokenize(content):
             start = i
             i += 1
             j = 1
-            while (i < n) and (j > 0): 
+            while (i < n) and (j > 0):
                 i += 1
                 if content[i] == "[": j +=1
                 if content[i] == "]": j -=1
@@ -2024,13 +2024,13 @@ def multiply(A, B,
 
 def simplify_transforms(tr_,
     # localize names:
-    list = list, range = range, len = len, SCALE = SCALE, rcomp = rcomp, 
-    LM1 = LM1, M1 = M1, TRANSLATE = TRANSLATE, ROTATE = ROTATE, radians = radians, 
-    cos = cos, sin = sin, multiply = multiply, round_matrix = round_matrix, 
+    list = list, range = range, len = len, SCALE = SCALE, rcomp = rcomp,
+    LM1 = LM1, M1 = M1, TRANSLATE = TRANSLATE, ROTATE = ROTATE, radians = radians,
+    cos = cos, sin = sin, multiply = multiply, round_matrix = round_matrix,
     sqrt = sqrt, degrees = degrees, atan2 = atan2, rtup = rtup, tuple = tuple):
 # Simplifies transformation sequences to the max 3 needed statements
     if not tr_: return [(TRANSLATE, 0, 0), (ROTATE, 0), (SCALE, 1, 1)], [(0, 0), 0, (1, 1)], M1
-    
+
     _tr = [list(tr_[i]) for i in range(len(tr_))]
 
     for t in _tr:
@@ -2125,9 +2125,9 @@ def plot_function(
     # 2006 Georg Wiora, xorx@quarkbox.de
     # 2006 Johan Engelen, johan@shouraizou.nl
     # 2005 Aaron Spike, aaron@ekips.org
-#)  
+#)
 # Parameters for unity:
-# fx, fy, samples=2, t_start=0, t_end=1, w=1, h=1, l=0, r=1, b=0, t=1, ox=0, oy=0, dx=None, dy=None, tox=0, toy=0, gain=None 
+# fx, fy, samples=2, t_start=0, t_end=1, w=1, h=1, l=0, r=1, b=0, t=1, ox=0, oy=0, dx=None, dy=None, tox=0, toy=0, gain=None
 # Here, we use positional parameters for speed
     fx, fy, # /Functions to plot
     samples, # = 2 /Number of output nodes
@@ -2230,7 +2230,7 @@ def plot_function(
 def u_scale(obj, scale = SCALE_FACTOR,
     # localize names:
     type = type, int = int, float = float,
-    isinstance = isinstance, tuple = tuple, 
+    isinstance = isinstance, tuple = tuple,
     dict = dict, us = None):
 # Recursively traverses nested structures (tuples, lists, dicts)
 # and multiplies every int/float by "scale".
@@ -2260,7 +2260,7 @@ u_scale.__defaults__ = u_scale.__defaults__[:-1] + (u_scale,)
 def tr(obj, scale = SCALE_FACTOR, ind = 0,
     # localize names:
     type = type, int = int, float = float,
-    isinstance = isinstance, tuple = tuple, 
+    isinstance = isinstance, tuple = tuple,
     dict = dict, range = range, t = None):
 # Recursively traverses nested structures (tuples, lists, dicts)
 # and multiplies every int/float by "scale" if index is even
@@ -2335,11 +2335,11 @@ class ConnMap(dict):
     # Checks if a rounded point key exists in the map.
         key = round_point(point)
         return super().__contains__(key)
-        
+
     def get(self, point, default=None):
     # Safely retrieves the bucket list for a rounded point, returning default if absent.
         key = round_point(point)
-        return super().get(key, default)        
+        return super().get(key, default)
 
 def count(eltype, counter):
     if counter is not None:
@@ -2501,7 +2501,7 @@ def get_path_bounds(path, b, svg_paths, mark, counter, sw = 0, _id = None, bound
         min_x, min_y, max_x, max_y = gcbb(path)
         omin_x, omin_y, omax_x, omax_y = gcbb(opath)
     else:
-        min_x, min_y, max_x, max_y = omin_x, omin_y, omax_x, omax_y = gcbb(path)        
+        min_x, min_y, max_x, max_y = omin_x, omin_y, omax_x, omax_y = gcbb(path)
     s = sw * 0.5
     min_x -= s; min_y -= s; max_x += s; max_y += s
     omin_x -= s; omin_y -= s; omax_x += s; omax_y += s
@@ -2662,9 +2662,9 @@ def mirror_point(p, angle_deg,  # untested
 
 def apply_transform(path, _tr_, backwards = True,
     # localize names:
-    list= list, translate_point = translate_point, TRANSLATE = TRANSLATE, 
-    ROTATE = ROTATE, SCALE = SCALE, len = len, abs = abs, range = range, 
-    rotate_point = rotate_point, int = int, scale_point = scale_point, 
+    list= list, translate_point = translate_point, TRANSLATE = TRANSLATE,
+    ROTATE = ROTATE, SCALE = SCALE, len = len, abs = abs, range = range,
+    rotate_point = rotate_point, int = int, scale_point = scale_point,
     tuple = tuple
 ):
 
@@ -2762,7 +2762,7 @@ def gnan(a,
     r = (s - 360) if (s > 180) else s
     return r
 
-def diag(pts, 
+def diag(pts,
     # localize names:
     rotate_point = rotate_point):
     return (rotate_point(p, -45) for p in pts)
@@ -2773,7 +2773,7 @@ def diag_(coords,
     it = iter(coords)
     # Unpacks each rotated (x, y) point back into individual coordinates on the fly
     return (c for pair in zip(it, it) for c in rotate_point(pair, -45))
-    
+
 def undiag(p,
     # localize names:
     apply_transform = apply_transform, ROTATE = ROTATE):
@@ -2802,7 +2802,7 @@ def combine_angle_codes(codes,
     total_rotation = sum(ROTATION_MAP.get(a, 0) for a in codes)
     return ANGLE_TO_CODE.get(gnan(total_rotation), 0)
 
-def combine_rotations(rots, 
+def combine_rotations(rots,
     # localize names:
     len = len, ROTATION_MAP = ROTATION_MAP, ANGLE_TO_CODE = ANGLE_TO_CODE,
     gnan = gnan
@@ -2820,7 +2820,7 @@ def combine_rotations(rots,
     mirror = (m % 2) != 0
     return ANGLE_TO_CODE.get(gnan(angle), 0) + (8 if mirror else 0)
 
-def ispoint(p, 
+def ispoint(p,
     # localize names:
     isinstance = isinstance, tuple = tuple, len = len,
     type = type, int = int, float = float
@@ -2829,7 +2829,7 @@ def ispoint(p,
     if len(p) != 2: return False
     return (type(p[0]) in (int, float)) and (type(p[1]) in (int, float))
 
-def combine_points(pts, 
+def combine_points(pts,
     # localize names:
     ispoint = ispoint, sum = sum):
     # Catching the edge case: if they passed a single unpacked point like combine_points(10, 20)
@@ -2865,10 +2865,10 @@ def combine_dnss(dnss,
         return dnss
     return max(dnss)
 
-def iscoordtup(x, 
+def iscoordtup(x,
     # localize names:
     isinstance = isinstance, tuple = tuple, int = int, float = float,
-    bool = bool, all = all, type = type 
+    bool = bool, all = all, type = type
 ):
 # Returns True if x is a tuple containing only int or float types.
 # Returns False otherwise (including empty tuples).
@@ -2878,9 +2878,9 @@ def iscoordtup(x,
         and all(type(item) in (int, float) for item in x)
     )
 
-def iscoordcol(x, 
+def iscoordcol(x,
     # localize names:
-    isinstance = isinstance, tuple = tuple, list = list, bool = bool, 
+    isinstance = isinstance, tuple = tuple, list = list, bool = bool,
     all = all, type = type, int = int, float = float):
 # Returns True if x is a tuple or list containing only int or float types.
 # Returns False otherwise (including empty tuples).
@@ -2892,7 +2892,7 @@ def iscoordcol(x,
 
 def to_svg_string_opt(path_list,
     # localize names:
-    rtup = rtup, len = len, SafeList = SafeList, rcomp = rcomp, 
+    rtup = rtup, len = len, SafeList = SafeList, rcomp = rcomp,
     str = str, DYN_PRECISION = DYN_PRECISION, rpub = rpub
 ):
 
@@ -2981,7 +2981,7 @@ def to_svg_string_not_opt(path_list,
     # Use .strip() or just join to ensure no accidental double spaces
     return " ".join(segments).strip()
 
-def qorvo(fs, 
+def qorvo(fs,
     # localize names:
     at = apply_transform, Q = Qorvo
 ):
@@ -2991,9 +2991,9 @@ def qorvo(fs,
     else:
         return Q
 
-def to_svg_string(path_list, 
+def to_svg_string(path_list,
     # localize names:
-    OPTIMIZE_PATHS = OPTIMIZE_PATHS, 
+    OPTIMIZE_PATHS = OPTIMIZE_PATHS,
     tsso = to_svg_string_opt,
     tssno = to_svg_string_not_opt
 ):
@@ -3022,7 +3022,7 @@ def triangle_(x1, y1, x2, y2, x3, y3):
         ("Z", ())
     ]
 
-def triangle(p1, p2, p3, 
+def triangle(p1, p2, p3,
     # localize names:
     triangle_ = triangle_
 ):
@@ -3033,7 +3033,7 @@ def rect_(x1, y1, x2, y2, diagonal = False,
     diag_ = diag_, undiag = undiag):
     if diagonal:
         x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
-        
+
     # Calculate intermediate corners
     corner2 = (x2, y1)
     corner4 = (x1, y2)
@@ -3045,10 +3045,10 @@ def rect_(x1, y1, x2, y2, diagonal = False,
         ("L", corner4),
         ("Z", ())
     ]
-    
+
     if diagonal:
         p = undiag(p)
-    
+
     return p
 
 def rect(p1, p2, diagonal = False,
@@ -3056,7 +3056,7 @@ def rect(p1, p2, diagonal = False,
     rect_ = rect_
 ):
     return rect_(p1[0], p1[1], p2[0], p2[1], diagonal)
-    
+
 def pin_(x, y, scale):
     r = rect_(-12.5 * scale + x, -12.5 * scale + y, 12.5 * scale + x, 12.5 * scale + y)
     x1 = line_(-8 * scale + x, -8 * scale + y, 8 * scale + x, 8 * scale + y)
@@ -3072,24 +3072,24 @@ def pin(p, scale,
     return pin_(p[0], p[1], scale)
 
 def netarrow_(x, y, scale):
-    return [("M", (-23*scale + x,            y)), 
-            ("L", ( 23*scale + x,            y)), 
-            ("L", (            x, 80*scale + y)), 
+    return [("M", (-23*scale + x,            y)),
+            ("L", ( 23*scale + x,            y)),
+            ("L", (            x, 80*scale + y)),
             ("Z", ())]
-    
+
 def netarrow(p, scale,
     # localize names:
     netarrow_ = netarrow_
 ):
     return netarrow_(p[0], p[1], scale)
-    
+
 def gnd_(x, y, scale):
-    return [("M", (-80*scale + x,            y)), 
-            ("L", ( 80*scale + x,            y)), 
-            ("L", (            x, 80*scale + y)), 
+    return [("M", (-80*scale + x,            y)),
+            ("L", ( 80*scale + x,            y)),
+            ("L", (            x, 80*scale + y)),
             ("Z", ())]
 
-def gnd(p, scale, 
+def gnd(p, scale,
     # localize names:
     gnd_ = gnd_
 ):
@@ -3101,8 +3101,8 @@ def earth_(x, y, scale):
         ("M", (-40*scale + x, 30*scale + y)), ("L", (40*scale + x, 30*scale + y)),
         ("M", (-80*scale + x,            y)), ("L", (80*scale + x,            y))
     ]
-    
-def earth(p, scale, 
+
+def earth(p, scale,
     # localize names:
     earth_ = earth_
 ):
@@ -3115,19 +3115,19 @@ def chassis_(x, y, scale):
         ("M", (-50*scale + x, y)), ("L",  (-80*scale  + x, 50*scale + y)),
         ("M", (-80*scale + x, y)), ("L",  ( 80*scale  + x,            y))
     ]
-    
+
 def chassis(p, scale,
     # localize names:
     chassis_ = chassis_
 ):
     return chassis_(p[0], p[1], scale)
-    
+
 _sin = lambda t, f=sin: -f(t) # ellipse function
 
 def ellipse_(x1, y1, x2, y2, samples=5, diagonal = False,
     # localize names:
     fx=cos, fy=sin, dx=_sin, dy=cos, plt = plot_function, PI2 = PI2,
-    min = min, max = max, abs = abs, len = len, 
+    min = min, max = max, abs = abs, len = len,
     diag_ = diag_, undiag = undiag):
 # Generates an ellipse as a list of path commands.
     if diagonal:
@@ -3136,18 +3136,18 @@ def ellipse_(x1, y1, x2, y2, samples=5, diagonal = False,
     # We use t to drive cos/sin, and the plot_function parameters
     # (width, height, left, bottom) to place it correctly in the SVG space.
     d = plt(
-        fx, fy, samples, 0, PI2, abs(x2 - x1), abs(y2 - y1), -1, 1, -1, 1, 
-        min(x1, x2), max(y1, y2), dx, dy, 0, 0, None 
+        fx, fy, samples, 0, PI2, abs(x2 - x1), abs(y2 - y1), -1, 1, -1, 1,
+        min(x1, x2), max(y1, y2), dx, dy, 0, 0, None
     )
 
     # Snap the last point to the first to fix numerical drift from 'ds'
     if d and len(d) > 1:
         d[-1] = (d[-1][0], d[-1][1][:4] + d[0][1])
         d.append(("Z", ()))
-    
+
     if diagonal:
         d = undiag(d)
-    
+
     return d
 
 def ellipse(p1, p2, samples=5, diagonal = False,
@@ -3171,7 +3171,7 @@ def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
 # Auto-mirrors if coordinates are reversed.
     if diagonal:
         x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
-    
+
     # 1. Declare constants
     w, h = abs(x2 - x1), abs(y2 - y1) # dimensions
     H, W = sd(w, h) # sorted dimensions
@@ -3192,7 +3192,7 @@ def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
     o = p*pi + k # half cycle offset
 
     # 2. Push parameters
-    f.__defaults__ = p, k, cos 
+    f.__defaults__ = p, k, cos
     d.__defaults__ = p, k, sin
 
     # 3. Pass constants and functions to plot_function in accordance with orientation
@@ -3200,12 +3200,12 @@ def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
         path = plt(sin, f, c*4, 0, T, w, h, -m, m, 0, W, ox, oy-o, cos, d, 0, -pi, None)
     else: # horizontal
         path = plt(f, sin, c*4, 0, T, w, h, 0, W, -m, m, ox+o, oy, d, cos, -pi, 0, None)
-        
+
     if diagonal:
         path = undiag(path)
-    
+
     return path
-    
+
 def coil(p1, p2, diagonal = False, mirror = 1,
     # localize names:
     coil_ = coil_
@@ -3224,7 +3224,7 @@ def zigzag_(x1, y1, x2, y2, diagonal = False,
 # Fits perfectly between (x1, y1) and (x2, y2).
     if diagonal:
         x1, y1, x2, y2 = diag_((x1, y1, x2, y2))
-        
+
     # 1. Declare constants
     w, h = abs(x2 - x1), abs(y2 - y1) # dimensions
     ox, oy = min(x1, x2), min(y1, y2) # position
@@ -3235,7 +3235,7 @@ def zigzag_(x1, y1, x2, y2, diagonal = False,
     q1, q3 = p * 0.25, p * 0.75 # quarters
 
     d = [] # path array
- 
+
     # 2. Push parameters
     if (h >= w): # vertical
         n = v
@@ -3257,7 +3257,7 @@ def zigzag_(x1, y1, x2, y2, diagonal = False,
         d.append(n(b + q3, -a)) # down to valley
     # Calculate end point
     d.append(n(l, 0.0)) # back to middle
-    
+
     if diagonal:
         d = undiag(d)
     return d
@@ -3279,7 +3279,7 @@ def arc_(x1, y1, x2, y2, x3, y3, x4, y4, diagonal = False,
 # p3 and p4 define the radial lines determining the arc endpoints.
     if diagonal:
         x1, y1, x2, y2, x3, y3, x4, y4 = diag_((x1, y1, x2, y2, x3, y3, x4, y4))
-        
+
     # 1. Declare constants
     # Center of the rectangle / ellipse
     cx = (x1 + x2) * 0.5
@@ -3300,16 +3300,16 @@ def arc_(x1, y1, x2, y2, x3, y3, x4, y4, diagonal = False,
     # Make the arc proceed counter-clockwise.
     if t_end < t_start:
         t_end += PI2
-    
+
     # 2. Call plot_function
     d = plt(
-        fx, fy, round(abs(t_end - t_start) * 1.5 * IP) + 2, t_start, t_end, 
+        fx, fy, round(abs(t_end - t_start) * 1.5 * IP) + 2, t_start, t_end,
         rx, ry, 0, 1, 0, 1, cx, cy, dx, dy, 0, 0, None
     )
-    
+
     if diagonal:
         d = undiag(d)
-    
+
     return d
 
 def arc(p1, p2, p3, p4, diagonal = False,
@@ -3346,17 +3346,17 @@ def arc3p_(x1, y1, x2, y2, x3, y3,
         a2 += PI2
 
     r, a = (r2 - r1), (a2 - a1) # radius, angle
-    
+
     # 2. Push parameters
     fx.__defaults__ = x3, r1, r, a1, a, cos
     fy.__defaults__ = y3, r1, r, a1, a, sin
     dx.__defaults__ = dy.__defaults__ = r1, r, a1, a, cos, sin
-    
+
     # 3. Call plot_function
     return plt(
-        fx, fy, round(abs(a) * 1.5 * IP) + 2, 0, 1, 1, 1, 
-        0, 1, 0, 1, 0, 0, dx, dy, 0, 0, None 
-    )   
+        fx, fy, round(abs(a) * 1.5 * IP) + 2, 0, 1, 1, 1,
+        0, 1, 0, 1, 0, 0, dx, dy, 0, 0, None
+    )
 
 def arc3p(p1, p2, p3,
     # localize names:
@@ -3449,7 +3449,7 @@ def strip_bom(text):
 def round_path(p, precision = (DYN_PRECISION*2)-1,
     # localize names:
     range = range, len = len, isinstance = isinstance,
-    tuple = tuple, round = round 
+    tuple = tuple, round = round
 ):
     for i in range(len(p)):
         cmd, coords = p[i]
@@ -3475,7 +3475,7 @@ def get_linetype_string(t, sw,
         return f' style="stroke-dasharray:{st}; stroke-dashoffset:0"'
     return ''
 
-def pt_to_str(p, 
+def pt_to_str(p,
     # localize names:
     round = round
 ):
@@ -3544,7 +3544,7 @@ def denot(line):
             else:
                 denotted.append(line[i])
                 i += 1
-        line = "".join(denotted)  
+        line = "".join(denotted)
     return line, notpos
 
 def parse_str(raw_text, fs):
@@ -3555,7 +3555,7 @@ def parse_str(raw_text, fs):
     for i, line in enumerate(lines):
         ly = i*1.2*fs
         notpos = []
-        line, notpos = denot(line)       
+        line, notpos = denot(line)
         # Basic XML escaping for SVG safety
         _out.append([line, escape_svg(line), 0, ly, notpos])
     return _out
@@ -3600,8 +3600,8 @@ def generate_text_rect(text, font_family, font_size, anchor, baseline, push_x, p
 def get_text_bounds(text, font_family, font_size, anchor, baseline, b, push_x, push_y, svg_paths, mark, counter, _tr = None, _id = None):
     p = generate_text_rect(text, font_family, font_size, anchor, baseline, push_x, push_y, _tr)
     return get_path_bounds(p, b, svg_paths, mark, counter, _id = _id)
-    
-def bound_to_rect(b, 
+
+def bound_to_rect(b,
     # localize names:
     rect_ = rect_
 ):
@@ -3621,13 +3621,13 @@ def get_char_span(text, i, anchor, baseline, font_family, font_size, ox):
     x1 = (sum(Fonts[font_family].get(ord(text[j]), 0.6) for j in range(i))*font_size) - offset + ox
     x2 = x1 + (Fonts[font_family].get(ord(text[i]), 0.6)*font_size)
     return x1, x2
-    
+
 def get_char_overline(text, i, anchor, baseline, font_family, font_size, ox, oy):
     x1, x2 = get_char_span(text, i, anchor, baseline, font_family, font_size, ox)
-    y = -Fonts[font_family][ASCENT]*NOT_ASCENT_COEFFICIENT*font_size + oy 
+    y = -Fonts[font_family][ASCENT]*NOT_ASCENT_COEFFICIENT*font_size + oy
     return line_(x1, y, x2, y)
 
-def hex_to_int(hex_str, 
+def hex_to_int(hex_str,
     # localize names:
     NONE = NONE, isinstance = isinstance, int = int
 ):
@@ -3658,7 +3658,7 @@ def to_grayscale(c,
     s = round(max(l-70, 0))
     return compose_color(s, s, s)
 
-def to_mono(c, 
+def to_mono(c,
     # localize names:
     get_color_lum = get_color_lum
 ):
@@ -3669,7 +3669,7 @@ def to_mono(c,
 
 def pub_color(q_color,
     # localize names:
-    hex_to_int = hex_to_int, to_grayscale = to_grayscale, 
+    hex_to_int = hex_to_int, to_grayscale = to_grayscale,
     to_mono = to_mono, NONE = NONE, GRAY_SCALE = GRAY_SCALE, MONO = MONO
 ):
     # Extract RGB (QSpice stores as BGR in the lower 3 bytes)
@@ -3688,14 +3688,14 @@ def pub_color(q_color,
     except (ValueError, TypeError):
         return NONE
 
-def get_color(q_color_, do_not_stuff=0, isfill = False, hblock = 0, issymbol = False, 
+def get_color(q_color_, do_not_stuff=0, isfill = False, hblock = 0, issymbol = False,
     # localize names:
     hex_to_int = hex_to_int, int_to_hex = int_to_hex, DONOTSTUFF_COLOR = DONOTSTUFF_COLOR,
-    HIERARCHICAL_BLOCK_COLOR = HIERARCHICAL_BLOCK_COLOR, 
+    HIERARCHICAL_BLOCK_COLOR = HIERARCHICAL_BLOCK_COLOR,
     HIERARCHICAL_BLOCK_STROKE_COLOR = HIERARCHICAL_BLOCK_STROKE_COLOR,
     SYMBOL_ANNOTATION_STROKE_COLOR = SYMBOL_ANNOTATION_STROKE_COLOR,
-    BACKGROUND_COLOR = BACKGROUND_COLOR, 
-    SYMBOL_ANNOTATION_FILL_COLOR = SYMBOL_ANNOTATION_FILL_COLOR, 
+    BACKGROUND_COLOR = BACKGROUND_COLOR,
+    SYMBOL_ANNOTATION_FILL_COLOR = SYMBOL_ANNOTATION_FILL_COLOR,
     ANNOTATION_STROKE_COLOR = ANNOTATION_STROKE_COLOR,
     SOLID_ANNOTATION_FILL_COLOR = SOLID_ANNOTATION_FILL_COLOR
 ):
@@ -3714,7 +3714,7 @@ def get_color(q_color_, do_not_stuff=0, isfill = False, hblock = 0, issymbol = F
     if (q_color_.startswith("0x3") and (q_color > 0xFFFFFF)):
         return SYMBOL_ANNOTATION_STROKE_COLOR if issymbol else ANNOTATION_STROKE_COLOR
     if (q_color_.startswith("0x4") and (q_color > 0xFFFFFF)):
-        return (SYMBOL_ANNOTATION_FILL_COLOR if issymbol else SOLID_ANNOTATION_FILL_COLOR) if isfill else (SYMBOL_ANNOTATION_STROKE_COLOR if issymbol else ANNOTATION_STROKE_COLOR) 
+        return (SYMBOL_ANNOTATION_FILL_COLOR if issymbol else SOLID_ANNOTATION_FILL_COLOR) if isfill else (SYMBOL_ANNOTATION_STROKE_COLOR if issymbol else ANNOTATION_STROKE_COLOR)
     q_color = q_color & 0xffffff
     return q_color
 
@@ -3817,7 +3817,7 @@ def split_net_strings(el):
         el[_2] = None
     el[_1] = f'"{net_name}"'
 
-def get_matrix_str(total_matrix, 
+def get_matrix_str(total_matrix,
     # localize names:
     rpub = rpub
 ):
@@ -3878,7 +3878,7 @@ def get_field_name(d, i, defs = QSPICE_DEFS, etype = None):
         else:
             field = f'{EXTRA_}{i}'
     return field
-    
+
 def add_qspice_value(d, v):
     if isinstance(d, QSpice):
         fn = get_field_name(d, len(d)-1)
@@ -3886,9 +3886,9 @@ def add_qspice_value(d, v):
         return fn, v
     return None
 
-def isbottom(d, 
+def isbottom(d,
     # localize names:
-    isinstance = isinstance, DRAWABLEID = DRAWABLEID, 
+    isinstance = isinstance, DRAWABLEID = DRAWABLEID,
     PARENT = PARENT, QSpice = QSpice
 ):
     for key in d:
@@ -3959,7 +3959,7 @@ def get_component_object(d):
         d = d.get(PARENT)
     if not d:
         return None
-        
+
 def get_schematic_object(d, init = True):
     if init:
         try:
@@ -3975,7 +3975,7 @@ def get_schematic_object(d, init = True):
             if (k != PARENT) and (isinstance(i, QSpice)):
                 if (i.get(TYPE) == SCHEMATIC):
                     return i
-        for k, i in d.items():  
+        for k, i in d.items():
             if (k != PARENT) and (isinstance(i, QSpice)):
                 r = get_schematic_object(i, False)
                 if r: return r
@@ -4026,10 +4026,10 @@ def get_symbol_type(d):
         if n: return n
     return ''
 
-def get_raw_symbol_bounds(d, portion = 0, l = None, 
+def get_raw_symbol_bounds(d, portion = 0, l = None,
     # localize names:
     TYPE = TYPE, COMPONENT = COMPONENT, SYMBOL = SYMBOL,
-    PARENT = PARENT, 
+    PARENT = PARENT,
     P1 = P1, P2 = P2, P3 = P3,
     ispoint = ispoint, ANNOTATION_DEFS = ANNOTATION_DEFS,
     min = min, max = max, isinstance = isinstance, QSpice = QSpice,
@@ -4056,8 +4056,8 @@ def get_raw_symbol_bounds(d, portion = 0, l = None,
                 grsb(d[key], 1, l)
         return l
 
-get_raw_symbol_bounds.__defaults__ = get_raw_symbol_bounds.__defaults__[:-1] + (get_raw_symbol_bounds,)     
-     
+get_raw_symbol_bounds.__defaults__ = get_raw_symbol_bounds.__defaults__[:-1] + (get_raw_symbol_bounds,)
+
 def get_resistor_rect(d):
     r = get_symbol_drawable_by_index(d, 1, RECT)
     if r:
@@ -4092,8 +4092,8 @@ def get_drawing_order(item, DRAWING_ORDER = DRAWING_ORDER,
     else:
         o = -1
     return o
-    
-def list_in_drawing_order(qspice, order, exclude_drawables = True, 
+
+def list_in_drawing_order(qspice, order, exclude_drawables = True,
     # localize names:
     PARENT = PARENT, SVG_SYMBOLS = SVG_SYMBOLS, isinstance = isinstance,
     DRAWABLEID = DRAWABLEID, QSpice = QSpice, gdo = get_drawing_order):
@@ -4102,7 +4102,7 @@ def list_in_drawing_order(qspice, order, exclude_drawables = True,
     # Sort keys by evaluating the drawing order of the underlying QSpice object
     its.sort(key=lambda i: gdo(i[1], order))
     return its
-    
+
 def process_element(d, f_dict, aux, depth = 0, k = None, parent = None):
     count = 0
     eltype = d.get(TYPE)
@@ -4142,7 +4142,7 @@ def traverse_numeric(d, f_dict, aux, depth = 0, hard = False):
             elif 'value_fb' in f_dict: # Fallback function
                 count += f_dict['value_fb'](d[key], f_dict, aux, depth+1, key, d)
     return count
-    
+
 def r_traverse(d, f_dict, aux, depth = 0):
     count = 0
     for i in range(len(d), -1, -1):
@@ -4170,7 +4170,7 @@ def r_traverse_numeric(d, f_dict, aux, depth = 0, hard = False):
                 count += f_dict[key](d[key], f_dict, aux, depth+1, key, d)
             elif 'value_fb' in f_dict: # Fallback function
                 count += f_dict['value_fb'](d[key], f_dict, aux, depth+1, key, d)
-    return count    
+    return count
 
 def gp(d,
     # localize names:
@@ -4376,7 +4376,7 @@ def detect_wire_end_points(el, conn_map, wire_endpoints):
 
     conn_map.append(p1)
     if p2: conn_map.append(p2)
-    
+
     if not p2:
         return CONTINUE
 
@@ -4399,7 +4399,7 @@ def detect_wire_end_points(el, conn_map, wire_endpoints):
             d1 += vy # Sum Y component
             d2 += 1  # Increment count
             wire_endpoints[pt_key] = (d0, d1, d2)
-                   
+
 def fill_metadata(qspice, portion = 0, depth = 0, key = None, parent = None, index = 1, s_p1 = None, s_rot = None, s_dns = None, conn_map = None, wire_endpoints = None, counter = None):
     if portion == 0:
         if s_p1 is None: s_p1 = []
@@ -4422,7 +4422,7 @@ def fill_metadata(qspice, portion = 0, depth = 0, key = None, parent = None, ind
         qspice['counter'] = counter
     if portion == 1:
         lcount = {}
-        etype = qspice.get(TYPE)    
+        etype = qspice.get(TYPE)
         dns = qspice.get(DONOTSTUFF, 0)
         rot = qspice.get(ROTATION, 0)
         p1 = qspice.get(P1, (0, 0))
@@ -4437,8 +4437,8 @@ def fill_metadata(qspice, portion = 0, depth = 0, key = None, parent = None, ind
             detect_wire_end_points(qspice, conn_map, wire_endpoints)
         elif etype == JUNCTION:
             _p = qspice.get(P1)
-            if _p: 
-                conn_map.append(_p)    
+            if _p:
+                conn_map.append(_p)
         if etype == COMPONENT:
             j = get_jumper(qspice)
             if j:
@@ -4449,12 +4449,12 @@ def fill_metadata(qspice, portion = 0, depth = 0, key = None, parent = None, ind
             symt = get_symbol_type(qspice)
             qspice[INSTANCENAME] = st
             qspice[COMPONENTVALUE] = vl
-            qspice[SYMBOLTYPE] = symt      
+            qspice[SYMBOLTYPE] = symt
         if etype == FILE_BOM:
             it = 'file'
         else:
             it = etype
-        if not it: 
+        if not it:
             it = 'object'
         count(it, counter)
         _id = parse_single_line(f'{it}_{counter[it]}')[1]
@@ -4482,11 +4482,11 @@ def get_flat_object(qspice, order = DRAWING_ORDER, init = True, l = None,
         etype = qspice.get(TYPE)
         if etype in DRAWABLE_DEFS:
             l.append(qspice)
-            
+
         for key, v in list_in_drawing_order(qspice, SYMBOL_DRAWING_ORDER if etype == SYMBOL else order):
             if isinstance(v, QSpice) and (key != PARENT):
                 gfo(v, order, False, l)
-      
+
 get_flat_object.__defaults__ = get_flat_object.__defaults__[:-1] + (get_flat_object,)
 
 def copy_qspice(d, type_include = (), key_exclude = (), exclude_drawables = True, exclude_inheritance = True, exclude_transform = True, init = True, o = None, function = None):
@@ -4496,9 +4496,9 @@ def copy_qspice(d, type_include = (), key_exclude = (), exclude_drawables = True
         if isinstance(etype, QSpice):
             artifact(d)
         copy_qspice(d, type_include, key_exclude, exclude_drawables, exclude_inheritance, exclude_transform, False, o, function)
-        return o        
+        return o
     else:
-        for k, v in d.items():   
+        for k, v in d.items():
             if k != PARENT:
                 if (k not in key_exclude) and (not(exclude_drawables and (DRAWABLE in k))) and (not(exclude_inheritance and (PARENT in k))) and (not(exclude_transform and (TRANSFORM == k))):
                     if isinstance(v, QSpice):
