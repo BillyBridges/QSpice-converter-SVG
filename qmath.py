@@ -29,6 +29,8 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
+# Version 1.0
+
 # Matching QSpice's March 20, 2026 build
 
 import importlib
@@ -3164,7 +3166,8 @@ def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
     # localize names:
     f = f_coil, d = d_coil, plt = plot_function, sd = sort_duke,
     fl = floor, PI2 = PI2, pi = pi, cos = cos, sin = sin,
-    abs = abs, min = min, max = max, diag_ = diag_, undiag = undiag):
+    abs = abs, min = min, max = max, diag_ = diag_, undiag = undiag,
+    rpub = rpub):
 # Draws a spring seen from 30 degrees in parallel projection
 # inside the bounding box defined by (x1, y1) and (x2, y2).
 # Auto-rotates if height > width.
@@ -3180,7 +3183,7 @@ def coil_(x1, y1, x2, y2, diagonal = False, mirror = 1,
 
     # Calculate number of cycles based on aspect ratio
     # Cycles are always an integer bigger than zero plus a half
-    c = max(0.5 + fl((1.5 * (W / H)) - 1), 1.5) # cycles
+    c = max(0.5 + fl(rpub((1.5 * (W / H)) - 1)), 1.5) # cycles
     T = c * PI2 # time domain
 
     # Geometry for 30 degrees parallel projection:
@@ -3219,7 +3222,8 @@ h_zigzag = lambda g, o, cm="L", oya=0.0, ox=0.0: (f"{cm}", ((ox + g), (oya - o))
 def zigzag_(x1, y1, x2, y2, diagonal = False,
     # localize names:
     v = v_zigzag, n = h_zigzag, fl = floor, abs = abs, min = min,
-    range = range, max = max, diag_ = diag_, undiag = undiag):
+    range = range, max = max, diag_ = diag_, undiag = undiag,
+    rpub = rpub):
 # Generates a triangle wave path using LineTo commands.
 # Fits perfectly between (x1, y1) and (x2, y2).
     if diagonal:
@@ -3230,7 +3234,7 @@ def zigzag_(x1, y1, x2, y2, diagonal = False,
     ox, oy = min(x1, x2), min(y1, y2) # position
     l = max(h, w) # length
     a = min(w, h) * 0.5 # amplitude
-    c = fl((0.75) * (l / (a * 2.0)) + 1.0) # cycles
+    c = fl(rpub((0.75) * (l / (a * 2.0)) + 1.0)) # cycles
     p = l / c # period
     q1, q3 = p * 0.25, p * 0.75 # quarters
 

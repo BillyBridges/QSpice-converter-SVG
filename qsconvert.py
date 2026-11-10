@@ -29,6 +29,8 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
+# Version 1.0
+
 # Matching QSpice's March 20, 2026 build
 
 # Fully patchable script. Functionalities can be added by adding
@@ -265,6 +267,9 @@ def get_text_svg(transform, font, fontsize, color, anchor, baseline, id_, safe_l
 
 def translate_text(safe_lines, raw_text, abstract, fs, etype, el, vis, ispin, stype, ptype, insname, invisible, depth, color, mirror, crv, aprin, angle, diagonal, anchor, baseline, rotation):
 # To patch
+
+# This function must be patched if the user desires to parse
+# programmable attributes or other text elements automatically.
     return safe_lines
 
 def process_text(etype, el, counter, svg_paths, b, show = True, mark_bounds = False, use_transform = None, abstract = False, remove_fill = False, p_p1 = None, p_dns = None, p_rot = None):
