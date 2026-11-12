@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.0
+# Version 1.01
 
 # Matching QSpice's March 20, 2026 build
 
@@ -74,6 +74,9 @@ import logging
 import traceback
 import time
 from qmath import handle_exception, inject_namespace
+
+if os.path.basename(sys.argv[0]) != "qsconvert.py":
+    sys.exit("Execution halted: Script's name must be 'qsconvert.py'.")
 
 logging.basicConfig(
     filemode='w',

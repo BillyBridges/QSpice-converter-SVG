@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.0
+# Version 1.01
 
 # Matching QSpice's March 20, 2026 build
 
@@ -1748,8 +1748,6 @@ def setup_parameters(params):
 # Loads any units in the working folder that starts with "qs"
 # And transfers control to them
 start_time = time.perf_counter()
-if os.path.basename(sys.argv[0]) != "qsconvert.py":
-    sys.exit("Execution halted: Script's name must be 'qsconvert.py'.")
 internal_parameters = get_arg_list(param_str)
 try:
     loaded_units = discover_and_load_units()
