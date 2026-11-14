@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.01
+# Version 1.02
 
 # Matching QSpice's March 20, 2026 build
 
@@ -1705,7 +1705,7 @@ def setup_parameters(params):
         if p in PARAMETERS:
             try:
                 _tp = int if PARAMETERS[p][3] == HEX else PARAMETERS[p][3]
-                PARAMETERS[p][2] = apply_op(PARAMETERS[p][2], flags[0][i][2], flags[0][i][3], _tp)
+                PARAMETERS[p][2] = apply_op(PARAMETERS[p][2], flags[1][i][2], flags[1][i][3], _tp)
                 print(f'Setting {PARAMETERS[p][4]} to: {PARAMETERS[p][2] if PARAMETERS[p][3] != HEX else int_to_hex(PARAMETERS[p][2])}')
                 del flags[0][i]
                 del flags[1][i]
