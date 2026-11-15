@@ -1196,6 +1196,9 @@ def declare_parameters():
     # Safely pull the dynamically assigned global variables
     scale_factor = globals().get('SCALE_FACTOR', 1.0)
     font_setting = globals().get('FONT', 'Tahoma')
+    if (font_setting not in Fonts):
+        print(f'Unsupported font: "{font_setting}". Falling back to "Tahoma"')
+        globals()['FONT'] = font_setting = 'Tahoma'
 
     DYN_PRECISION = get_dynamic_precision(scale_factor)
     epsilon =  eval(f'1e-{DYN_PRECISION+4}')  # Safety factor for IEEE-754 floats
@@ -1730,10 +1733,6 @@ def setup_parameters(params):
     if 0.0 in (WIDTHCM, HEIGHTCM, UNITSPERCM):
         print('Dimension error: Dimension parameters cannot be zero.')
         raise SystemExit
-
-    if (FONT not in Fonts):
-        print(f'Unsupported font: "{FONT}". Falling back to "Tahoma"')
-        FONT = 'Tahoma'
 
     for i in range(len(flags[0])):
         if (not inflags(flags[0][i][1])) and (flags[0][i][1] not in PARAMETERS):
