@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.01
+# Version 1.011
 
 # Matching QSpice's March 20, 2026 build
 
@@ -139,7 +139,7 @@ def get_text_svg_or(transform, font, fontsize, color, anchor, baseline, id_, saf
 # Replaces "get_text_svg" in the main function, now to generate the text in the form of a "path" command instead of "text".
 
     sls = [safe_lines] if isinstance(safe_lines[0], str) else safe_lines
-    gopen = False
+
     tspans_l = []
     for line in sls:
         if line[4]: # annoying lines over characters
