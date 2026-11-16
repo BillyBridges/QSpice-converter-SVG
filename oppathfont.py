@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.01
+# Version 1.015
 
 # Matching QSpice's March 20, 2026 build
 
@@ -128,8 +128,6 @@ class SplineSet(list):
                     else:
                         scaled += Y_OFFSET
                     res.append(scaled)
-                elif isinstance(val, (list, tuple)):
-                    res.append(tuple(self._transform_coords(val)) if isinstance(val, tuple) else self._transform_coords(val))
                 else:
                     res.append(val)
             return tuple(res)
