@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.0
+# Version 1.01
 
 # Matching QSpice's March 20, 2026 build
 
@@ -44,54 +44,54 @@ from qmath import push, pop, Push, Pop, stack
 
 main = sys.modules['__main__']
 opfont = q.Fonts['qsopenpath'] = {
-	q.WIN_ASCENT: 1.056060606060606,
-	q.WIN_DESCENT: 0.3109090909090909,
-	q.TYPO_ASCENT: 1.054242424242424,
-	q.TYPO_DESCENT: -0.2890909090909091,
-	q.TYPO_LINE_GAP: 0,
-	q.HHEAD_ASCENT: 1.054242424242424,
-	q.HHEAD_DESCENT: -0.2890909090909091,
-	q.HHEAD_LINE_GAP: 0,
-	q.CAPITAL_HEIGHT: 0.6581818181818182,
-	q.X_HEIGHT: 0.4081818181818182,
-	q.ASCENT: 0.7996969696969697,
-	q.DESCENT: 0.2003030303030303,
-	q.UNDERLINE_POSITION: -0.1248484848484848,
-	q.HEIGHT: 0.0496969696969697}
-    
+    q.WIN_ASCENT: 1.056060606060606,
+    q.WIN_DESCENT: 0.3109090909090909,
+    q.TYPO_ASCENT: 1.054242424242424,
+    q.TYPO_DESCENT: -0.2890909090909091,
+    q.TYPO_LINE_GAP: 0,
+    q.HHEAD_ASCENT: 1.054242424242424,
+    q.HHEAD_DESCENT: -0.2890909090909091,
+    q.HHEAD_LINE_GAP: 0,
+    q.CAPITAL_HEIGHT: 0.6581818181818182,
+    q.X_HEIGHT: 0.4081818181818182,
+    q.ASCENT: 0.7996969696969697,
+    q.DESCENT: 0.2003030303030303,
+    q.UNDERLINE_POSITION: -0.1248484848484848,
+    q.HEIGHT: 0.0496969696969697}
+
 skew_height = 0.974
 capital_half_height = opfont[q.CAPITAL_HEIGHT] * 0.5
 hang_dec = opfont[q.HHEAD_ASCENT] - capital_half_height
 
-def render_text(text, font, anchor, baseline, scale=1.0, skew_angle=0.0, skew_height=0.0, x_offset=0.0, y_offset=0.0):  
+def render_text(text, font, anchor, baseline, scale=1.0, skew_angle=0.0, skew_height=0.0, x_offset=0.0, y_offset=0.0):
 # Renders an entire string into a single SVG path object, applying scale,
 # skew, offsets, and handling typographic Y-up to SVG Y-down conversion.
-    
+
     # Precompute skew matrix factors
     # Skew angle in degrees converted to radians (horizontal shear based on height offset)
     skew_rad = math.radians(skew_angle)
     tan_skew = math.tan(skew_rad)
-    
+
     combined_path_commands = []
     tw = q.get_text_width(text, 'qsopenpath', scale)
     sx = -tw if anchor == q.END else 0 if anchor == q.START else -0.5*tw
     current_x = x_offset + sx
     sy = -capital_half_height*scale if (baseline == q.ALPHABETIC) else (0 if (baseline in (q.MIDDLE, q.CENTRAL)) else hang_dec*scale)
-    
+
     for char in text:
         code_point = ord(char)
-        
+
         glyph = font.get_glyph(code_point)
         if not glyph:
             continue
-            
+
         spline_set = glyph.get("SplineSet", [])
         raw_width = glyph.get("Width", 0.467878787878)
-        
+
         # Process and transform each command's coordinates for this glyph
         for cmd, data in spline_set:
             op_coords = []
-            
+
             # Flatten data tuples/lists
             flat_coords = []
             for item in data:
@@ -99,35 +99,35 @@ def render_text(text, font, anchor, baseline, scale=1.0, skew_angle=0.0, skew_he
                     flat_coords.extend(item)
                 else:
                     flat_coords.append(item)
-            
+
             # Transform coordinate pairs (x, y)
             for i in range(0, len(flat_coords), 2):
                 gx = flat_coords[i]
                 gy = flat_coords[i+1]
-                
+
                 # 1. Apply horizontal cursor offset and character scaling
                 scaled_x = gx * scale
                 scaled_y = gy * scale
-                
+
                 # 2. Apply skew around the given skew_height
                 # Horizontal shear formula: x_new = x + (y - height) * tan(angle)
                 if tan_skew != 0.0:
                     scaled_x += (scaled_y - (skew_height * scale)) * tan_skew
-                
+
                 # 3. Translate by current string cursor position and user offsets
                 final_x = scaled_x + current_x
-                
+
                 # 4. Convert typographic Y-up to SVG Y-down, then apply scale & Y offset
                 # SVG origin is top-left, so Y needs inversion relative to em_size scaled space
                 final_y = scale - scaled_y + y_offset + sy
-                
+
                 op_coords.extend([final_x, final_y])
-                
+
             combined_path_commands.append((cmd, tuple(op_coords)))
-            
+
         # Advance cursor for the next character (scaled by user scale factor)
         current_x += raw_width * scale
-        
+
     return combined_path_commands
 
 def generate_text_svg_markup(text, font, scale=1.0, skew_angle=0.0, skew_height=0.0, y_offset=0.0, x_offset=0.0, stroke_width=200, color = 0x0):
@@ -137,24 +137,35 @@ def generate_text_svg_markup(text, font, scale=1.0, skew_angle=0.0, skew_height=
 
 def get_text_svg_or(transform, font, fontsize, color, anchor, baseline, id_, safe_lines, depth, counter, b, fs, crv = None, aprin = None, ispin = None, remove_fill = False, castable = False, invisible = False):
 # Replaces "get_text_svg" in the main function, now to generate the text in the form of a "path" command instead of "text".
-    Push([])
+
     sls = [safe_lines] if isinstance(safe_lines[0], str) else safe_lines
     gopen = False
-    
+    tspans_l = []
     for line in sls:
         if line[4]: # annoying lines over characters
             notpos = line[4]
-            gopen = True
             for i in notpos:
-                path_data = q.get_char_overline(line[0], i, anchor, baseline, q.FONT, fs, line[2], line[3])
-                push(q.QSpice({q.TYPE: q.PATH, q.P1: (0, 0), q.PATHDATA: path_data, q.STROKEWIDTH: (q.NOT_STROKE_WIDTH*fs)/160, q.LINETYPE: 0, q.LINECOLOR: color, q.FILLCOLOR: -1}))
-                
+                tspans_l.extend(q.get_char_overline(line[0], i, anchor, baseline, q.FONT, fs, line[2], line[3]))
+
+    # Remove redundant nodes:
+    i = 1
+    while i < len(tspans_l):
+        if q.rtup(tspans_l[i][1][-2:]) == q.rtup(tspans_l[i-1][1][-2:]):
+            del tspans_l[i]
+        else:
+            i += 1
+    i = 1
+    while i < len(tspans_l):
+        if (tspans_l[i][0] == 'L') and (tspans_l[i-1][0] == 'L'):
+            del tspans_l[i-1]
+        else:
+            i += 1
+
     if len(sls) > 1:
-        tspans_l = []
         for sl in sls:
             tspans_l.extend(render_text(sl[0], opfont, anchor, baseline, fontsize, OPEN_PATH_TEXT_SKEW_ANGLE, skew_height, sl[2], sl[3]))
-    else:        
-        tspans_l = render_text(sls[0][0], opfont, anchor, baseline, fontsize, OPEN_PATH_TEXT_SKEW_ANGLE, skew_height, sls[0][2], sls[0][3])
+    else:
+        tspans_l.extend(render_text(sls[0][0], opfont, anchor, baseline, fontsize, OPEN_PATH_TEXT_SKEW_ANGLE, skew_height, sls[0][2], sls[0][3]))
 
     if invisible: color = None
     stroke_str = f' stroke="{q.pub_color(color)}"'
@@ -162,36 +173,25 @@ def get_text_svg_or(transform, font, fontsize, color, anchor, baseline, id_, saf
     sw_str = f' stroke-width="{sw}"'
     path_str = f' d="{q.to_svg_string(tspans_l)}"'
     fill_str = f' fill="{q.NONE}"'
-    text_elem = (f'<{q.PATH}{path_str}{"" if gopen else transform}{stroke_str}{fill_str}{sw_str}'
+    return (f'<{q.PATH}{path_str}{transform}{stroke_str}{fill_str}{sw_str}'
                          f' stroke-linejoin="{q.ROUND}" stroke-linecap="{q.ROUND}" id="{id_}"/>')
-
-    out = []
-    if gopen:
-        out.append(f'<g id="{id_}_g"{transform}>')
-    out.append(text_elem)
-    while stack():
-        main.draw_fundamental(pop(), None, out, counter, b, None, None, mark_bounds=q.MARK_BOUNDS, transform = None if gopen else transform, bound_transform = transform if gopen else None)
-    if gopen:
-        out.append('</g>')
-    Pop()
-    return "\n".join(out)
 
 def generate_text_svg_markup_sample(text, font, scale=1.0, skew_angle=0.0, skew_height=0.0, y_offset=0.0, x_offset=0.0, stroke_width=200):
     approx_width = q.get_text_width(text, 'qsopenpath', scale)
     d = generate_text_svg_markup(text, font, scale, skew_angle, skew_height, y_offset, x_offset, stroke_width)
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" 
-viewBox="0 0 {approx_width} {scale * 1.5}" 
+    return f"""<svg xmlns="http://www.w3.org/2000/svg"
+viewBox="0 0 {approx_width} {scale * 1.5}"
 width="100%" height="100%">
 {d}
 </svg>"""
-    
-def run_test():   
+
+def run_test():
     svg_output = generate_text_svg_markup_sample('Glib Jocks Quiz (Nymph) To Vex Dwarf Pack My Box With Five Dozen Liquor Jugs JACKDAWS LOVE MY BIG SPHINX OF QUARTZ1234567890', o.get_open_path_font(), scale=160.0, skew_angle=19.0, skew_height=skew_height, y_offset=0.0, x_offset=0.0, stroke_width=15)
-    
+
     output_filename = "text_visual_test.svg"
     with open(output_filename, "w", encoding="utf-8") as f:
         f.write(svg_output)
-        
+
     print(f"Successfully generated visual test SVG: {output_filename}")
 
 def init_unit(pstr):
@@ -214,6 +214,6 @@ def patch(pstr):
         skew_height = OPEN_PATH_TEXT_SKEW_HEIGHT
         o.Glyph.width_offset = o.SplineSet.width_offset = OPEN_PATH_TEXT_WIDTH_OFFSET
         opfont = q.Fonts['qsopenpath'] = o.get_open_path_font()
-    
+
 if __name__ == '__main__':
     run_test()

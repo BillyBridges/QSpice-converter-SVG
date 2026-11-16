@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.0
+# Version 1.01
 
 # Matching QSpice's March 20, 2026 build
 
@@ -54,10 +54,10 @@ class Font(dict):
             return self[key]
         except KeyError:
             return default
-            
+
     def get_glyph(self, key, default=None):
         try:
-            val = super().__getitem__(key)  
+            val = super().__getitem__(key)
         except:
             return default
         return val
@@ -81,10 +81,10 @@ class Glyph(dict):
             return self[key]
         except KeyError:
             return default
-            
+
     def get_raw(self, key, default=None):
         try:
-            val = super().__getitem__(key)  
+            val = super().__getitem__(key)
         except KeyError:
             return default
         return val
@@ -135,7 +135,7 @@ class SplineSet(list):
             return tuple(res)
         return coords
 
-def get_open_path_font():            
+def get_open_path_font():
     return Font({
         q.WIN_ASCENT: 3485,
         q.WIN_DESCENT: 1026,
@@ -166,7 +166,7 @@ def get_open_path_font():
                 ('M',(340, 416)),
                 ('C',(561, 846, 906, 1134, 1254, 1313)),
             ]),
-        }),        
+        }),
         8486: Glyph({
             "CharName": "Omega",
             "Encoding": (8486, 8486, 1445),
@@ -194,7 +194,7 @@ def get_open_path_font():
                 ('C', (57.5048828125, 16.150390625, -44.2001953125, 1533.40039062, 828.749023438, 1811.34960938)),
                 ('C', (828.749023438, 1811.34960938, 94.349609375, 1811.24707031, 94.349609375, 1810.87402344)),
             ]),
-        }),        
+        }),
         65536: Glyph({
             "CharName": ".notdef",
             "Encoding": (65536, -1, 0),
@@ -19383,10 +19383,14 @@ def get_open_path_font():
             #"VWidth": 1000,
         }),
     })
+
 if __name__ == "__main__":
     try:
         f = get_open_path_font()
     except Exception as e:
         print(f'An error ocurred while trying to register the open-path font: "{e}"')
         raise SystemExit
-    print("The open-path font was registered correctly.")
+    print("The open-path font was registered correctly.\n")
+    for e in f:
+        if isinstance(e, str):
+            print(f'{e}: {f[e]}')
