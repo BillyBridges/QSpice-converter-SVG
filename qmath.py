@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.032
+# Version 1.033
 
 # Matching QSpice's March 20, 2026 build
 
@@ -1688,7 +1688,7 @@ def setup_parameters(params):
         i1 = detect_flag(p[0], flags[0])
         i2 = detect_flag(p[1], flags[0])
         if (i1 is not None) and (i2 is not None):
-            print(f'Conflicting flags: {flags[1][i1]} and {flags[1][i2]}')
+            print(f'Conflicting flags: {flags[1][i1][0]} and {flags[1][i2][0]}')
             raise SystemExit
     # process flags
     i = 0
