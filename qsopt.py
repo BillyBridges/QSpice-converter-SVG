@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.011
+# Version 1.02
 
 # Matching QSpice's March 20, 2026 build
 
@@ -185,8 +185,8 @@ width="100%" height="100%">
 {d}
 </svg>"""
 
-def run_test():
-    svg_output = generate_text_svg_markup_sample('Glib Jocks Quiz (Nymph) To Vex Dwarf Pack My Box With Five Dozen Liquor Jugs JACKDAWS LOVE MY BIG SPHINX OF QUARTZ1234567890', o.get_open_path_font(), scale=160.0, skew_angle=19.0, skew_height=skew_height, y_offset=0.0, x_offset=0.0, stroke_width=15)
+def run_test(st = 'Glib Jocks Quiz (Nymph) To Vex Dwarf Pack My Box With Five Dozen Liquor Jugs JACKDAWS LOVE MY BIG SPHINX OF QUARTZ1234567890'):
+    svg_output = generate_text_svg_markup_sample(st, o.get_open_path_font(), scale=160.0, skew_angle=19.0, skew_height=skew_height, y_offset=0.0, x_offset=0.0, stroke_width=15)
 
     output_filename = "text_visual_test.svg"
     with open(output_filename, "w", encoding="utf-8") as f:
@@ -198,7 +198,7 @@ def init_unit(pstr):
     q.add_parameter('/OPTSW', ['qsopt', 'OPEN_PATH_TEXT_STROKE_WIDTH', 15.0, float, 'open path text stroke width']) # Default = 15
     q.add_parameter('/OPTSA', ['qsopt', 'OPEN_PATH_TEXT_SKEW_ANGLE', 19.0, float, 'open path text skew angle']) # Default = 19
     q.add_parameter('/OPTSH', ['qsopt', 'OPEN_PATH_TEXT_SKEW_HEIGHT', 0.974, float, 'open path text skew height factor']) # Default = 0.974
-    q.add_parameter('/OPTWS', ['qsopt', 'OPEN_PATH_TEXT_WIDTH_OFFSET', 0.05, float, 'open path text width offset']) # Default = 0.05
+    q.add_parameter('/OPTWO', ['qsopt', 'OPEN_PATH_TEXT_WIDTH_OFFSET', 0.05, float, 'open path text width offset']) # Default = 0.05
     q.HELP_HEADER.append('Supported fonts:')
     q.HELP_HEADER.append('')
     for f in q.Fonts:
@@ -216,4 +216,19 @@ def patch(pstr):
         opfont = q.Fonts['qsopenpath'] = o.get_open_path_font()
 
 if __name__ == '__main__':
-    run_test()
+    try:
+        if sys.argv[1].upper() == "ALL":
+            gl = []
+            f = o.get_open_path_font()
+            for g in f:
+                if isinstance(g, int):
+                    ss = f.get_glyph(g).get("SplineSet")
+                    if ss:
+                        gl.append(chr(g))
+            st = "".join(gl)
+            print(st)
+            run_test(st)
+        else:
+            run_test()
+    except:
+        run_test()

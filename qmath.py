@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.03
+# Version 1.032
 
 # Matching QSpice's March 20, 2026 build
 
@@ -2956,7 +2956,8 @@ def to_svg_string_opt(path_list,
 
         p1 = p2
         cmdi += 1
-        segments.extend(strcmd)
+        if (strcmd[0] in ("Z", "z")) or (len(strcmd) > 2):
+            segments.extend(strcmd)
         prevcmd = curcmd
     del segments[-1]
     segments[0] = segments[0].upper()
