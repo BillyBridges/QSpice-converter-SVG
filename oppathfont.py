@@ -29,11 +29,10 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.03
+# Version 1.031
 
 # Matching QSpice's March 20, 2026 build
 
-import qmath as q
 import math
 import sys
 

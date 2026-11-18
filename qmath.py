@@ -29,7 +29,7 @@
 # 2026 Billy Bridges(billyjoebridgesmartin@gmail.com)
 # Unless otherwise noted.
 
-# Version 1.033
+# Version 1.037
 
 # Matching QSpice's March 20, 2026 build
 
@@ -2905,7 +2905,6 @@ def to_svg_string_opt(path_list,
     er = m1r[0] - m1[0], m1r[1] - m1[1] # Rounding compensation
 
     segments = []
-    strcmd = []
     cmdi = 0
     prevcmd = None
     while cmdi < len(path_list):
@@ -2938,10 +2937,10 @@ def to_svg_string_opt(path_list,
                     strcmd.append(str(rpub((p[1] -  p1[1]) + er[1])))
                     strcmd.append(' ')
                 elif curcmd == 'h':
-                    strcmd.append(str(rpub((p[0] -  pp[0]))))
+                    strcmd.append(str(rpub((p[0] -  pp[0]) + er[0])))
                     strcmd.append(' ')
                 elif curcmd == 'v':
-                    strcmd.append(str(rpub((p[1] -  pp[1]))))
+                    strcmd.append(str(rpub((p[1] -  pp[1]) + er[1])))
                     strcmd.append(' ')
                 coordi += 2
                 pp = p
