@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Extension "Render Open Path Text" for inkscape -->
+<!-- Dependencies: oppathfont.py, render_text_ext.py -->
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Path Text</name>
+    <id>com.example.rendertext</id>
+
+    <param name="text" type="string" gui-text="Text:">Your Text Here</param>
+    <param name="scale" type="float" min="0.0" max="10000000.0" precision="1" gui-text="Scale:">1.0</param>
+    <param name="skew_angle" type="float" min="-50.0" max="50.0" precision="1" gui-text="Skew Angle:">19.0</param>
+    <param name="stroke_width" type="float" min="0.0" max="10000000.0" precision="1" gui-text="Stroke Width:">15.0</param>
+    <param name="width_offset" type="float" min="-10000.0" max="10000.0" precision="1" gui-text="Width Offset(cent):">5.0</param>
+    <param name="proportional_stroke" type="bool" gui-text="Proportional Stroke Width(160)">True</param>
+    <param name="dynamic_precision" type="int" min="-20" max="20" gui-text="Dynamic Precision:">5</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="Render"/>
+        </effects-menu>
+    </effect>
+
+    <script>
+        <command location="inx" interpreter="python">render_text_ext.py</command>
+    </script>
+</inkscape-extension>
